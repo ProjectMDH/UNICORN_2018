@@ -63,6 +63,7 @@ RefuseBin::RefuseBin()
 	yaw = 0;
 }
 
+/*
 RangeSensor::RangeSensor(const std::string& sensor_topic)
 : TOPIC(sensor_topic)
 {
@@ -80,7 +81,7 @@ float RangeSensor::getRange()
 {
 	return range_;
 }
-
+*/
 UnicornState::UnicornState() 
 : move_base_clt_("move_base", true)
 {
@@ -122,6 +123,7 @@ UnicornState::UnicornState()
   bumper_sub_ = n_.subscribe("pushed",0, &UnicornState::bumperCallback, this);
 
 
+ /* 
   if(sim_time)
   {
 	range_sensor_list_["ultrasonic_bm"] = new RangeSensor("ultrasonic_bm");
@@ -131,6 +133,7 @@ UnicornState::UnicornState()
   	range_sensor_list_["ultrasonic_bmr"] = new RangeSensor("ultrasonic_bmr");
   	range_sensor_list_["ultrasonic_bml"] = new RangeSensor("ultrasonic_bml");
   }
+	*/
 
   n_.getParam("global_local", run_global_loc);
   if (run_global_loc)
@@ -249,13 +252,25 @@ void UnicornState::processKey(int c)
   	{
   		std::cout << "Target x: ";
   		if(!getInput(x))
+  		{
+  			
     		return;
+  		}
     	std::cout << "Target y: ";
     	if(!getInput(y))
+    	{
+    		
     		return;
+    	}
     	std::cout << "Target yaw: ";
     	if(!getInput(yaw))
+    	{
+    		
     		return;
+    	}
+    	target_x_= x;
+    	target_y_= y;
+    	target_yaw_ = yaw;
     	sendGoal(x,y,yaw);
     	state_ = current_state::AUTONOMOUS;
     	printUsage();
@@ -327,12 +342,26 @@ void UnicornState::odomCallback(const nav_msgs::Odometry& msg)
 
 void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 {
-	bool test;
-	test = pushed_msg.data;
-	if (test == true)
+	int tmp_vel, tmp_angvel;
+
+
+	if (pushed_msg.data == true)
 	{
+		old_vel_ = current_vel_;
+		ROS_INFO("current_vel_ %lf", old_vel_);
 		ROS_INFO("BUMPER IS PUSHED");
+		cancelGoal();
+		man_cmd_vel_.angular.z = 0;
+		man_cmd_vel_.linear.x = 0;
 	}
+	else if (pushed_msg.data == false)
+	{
+		ROS_INFO("x,y,yaw %f, %f, %f",target_x_,target_y_,target_yaw_);
+		sendGoal(target_x_,target_y_,target_yaw_);
+    	state_ = current_state::AUTONOMOUS;
+
+	}
+	
 
 }
 
@@ -340,15 +369,20 @@ void UnicornState::active()
 {
 	int c = getCharacter();
 	processKey(c);
+
+	
 	// float current_range = (range_sensor_list_["ultrasonic_bmr"]->getRange()*sin(M_PI/6) +
 	// 						range_sensor_list_["ultrasonic_bml"]->getRange()*sin(M_PI/6)) / 2;
-	float current_range = 0;
+
+	/*
+	float current_range = 0;	
 	for (std::map<std::string, RangeSensor*>::iterator it = range_sensor_list_.begin(); it != range_sensor_list_.end(); ++it)
 	{
 		current_range += it->second->getRange();
 	}
 	current_range /= range_sensor_list_.size();
-	
+*/	
+
 	switch(state_)
 	{
 		case current_state::AUTONOMOUS:
@@ -365,7 +399,9 @@ void UnicornState::active()
 		{
 			if (man_cmd_vel_.angular.z < MAX_ANGULAR_VEL)
 			{
+
 				man_cmd_vel_.angular.z += MAX_ANGULAR_VEL;
+				current_ang_vel_ = man_cmd_vel_.angular.z;
 			}
 		}
 		else if (c == 'w')
@@ -423,20 +459,20 @@ void UnicornState::active()
 				// float current_range = (range_sensor_list_["ultrasonic_bmr"]->getRange()*sin(M_PI/6) +
 				// 					  range_sensor_list_["ultrasonic_bml"]->getRange()*sin(M_PI/6)) / 2;
 				// ROS_INFO("current range: %f", current_range);
-				if((current_range > 0.3)
-					&&(current_range < 2.0))
-				{
-					ROS_INFO("current range: %f", current_range);
+				//if((current_range > 0.3)
+				//	&&(current_range < 2.0))
+		//		{
+				//	ROS_INFO("current range: %f", current_range);
 
 					// man_cmd_vel_.linear.x = -0.17;
 					/*Alternatively use pid*/
-					float pidterm;
-					velocity_pid_->control(pidterm, -current_range);
-					ROS_INFO("pidterm: %f", pidterm);
-					man_cmd_vel_.linear.x = pidterm;
-				}
-				else
-				{
+				//	float pidterm;
+				//	velocity_pid_->control(pidterm, -current_range);
+				//	ROS_INFO("pidterm: %f", pidterm);
+				//	man_cmd_vel_.linear.x = pidterm;
+		//		}
+				//else
+				//{
 					ROS_INFO("Current vel: %f", current_vel_);
 					if (std::abs(current_vel_) < 0.05)
 					{
@@ -448,7 +484,7 @@ void UnicornState::active()
 					{
 						man_cmd_vel_.linear.x = -0.1;
 					}
-				}
+		//		}
 				cmd_vel_pub_.publish(man_cmd_vel_);
 
 				break;
@@ -459,8 +495,8 @@ void UnicornState::active()
 		    		ROS_INFO("[unicorn_statemachine] Exiting garbage disposal");
 		    		man_cmd_vel_.linear.x = 0.15;
 				}
-				if ((current_range > 1.0)
-					&&(current_range < 2.0))
+			//	if ((current_range > 1.0)
+			//		&&(current_range < 2.0))
 				{
 					man_cmd_vel_.linear.x = 0.0;
 					ROS_INFO("[unicorn_statemachine] Loading complete!");

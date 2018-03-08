@@ -90,7 +90,8 @@ private:
 };
 
 /** @brief Class for reading data of rangesensors*/
-class RangeSensor
+
+/*class RangeSensor
 {
 public:
 	RangeSensor(const std::string& sensor_topic);
@@ -102,7 +103,7 @@ private:
 	ros::Subscriber range_sub_;
 
 	float range_;	
-};
+};*/
 
 /** @brief Main node class for unicorn_statemachine.
 *
@@ -178,10 +179,19 @@ private:
 	int move_base_active_;
 	double current_yaw_;
 	double current_vel_;
+	double current_ang_vel_;
+	double old_vel_;
+	double old_ang_vel_;
 	double MAX_ANGULAR_VEL;
 	double MAX_LINEAR_VEL;
-
-	std::map<std::string, RangeSensor*> range_sensor_list_; /**< List of active rangesensors*/
+	bool bumperPressed_;
+	float target_x_;
+	float target_y_;
+	float target_yaw_;
+	/*
+	std::map<std::string, RangeSensor*> range_sensor_list_; /**< List of active rangesensors
+	*/
+	
 };
 
 #endif
