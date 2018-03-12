@@ -118,11 +118,14 @@ UnicornState::UnicornState()
   move_base_cancel_pub_ = n_.advertise<actionlib_msgs::GoalID>("/move_base/cancel", 0);
   amcl_global_clt_ = n_.serviceClient<std_srvs::Empty>("/global_localization");
   cmd_vel_pub_ = n_.advertise<geometry_msgs::Twist>("/unicorn/cmd_vel", 0);
+  lift_pub_ =n_.advertise<std_msgs::Int8>("/lift",0);
   odom_sub_ = n_.subscribe(odom_topic.c_str(), 0, &UnicornState::odomCallback, this);
   acc_cmd_srv_ = n_.advertiseService("cmd_charlie", &UnicornState::accGoalServer, this);
   bumper_sub_ = n_.subscribe("pushed",0, &UnicornState::bumperCallback, this);
 
 
+
+  
  /* 
   if(sim_time)
   {
@@ -196,6 +199,9 @@ std::string UnicornState::stateToString(int state)
 
 		default:
 		return "INVALID STATE";
+
+		case current_state::LIFT:
+		return "LIFT";
 	}
 }
 
@@ -344,11 +350,10 @@ void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 {
 	int tmp_vel, tmp_angvel;
 
-
+	/* bumpsensor activated and stop the agent */
 	if (pushed_msg.data == true)
 	{
-		old_vel_ = current_vel_;
-		ROS_INFO("current_vel_ %lf", old_vel_);
+		
 		ROS_INFO("BUMPER IS PUSHED");
 		cancelGoal();
 		man_cmd_vel_.angular.z = 0;
@@ -356,7 +361,7 @@ void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 	}
 	else if (pushed_msg.data == false)
 	{
-		ROS_INFO("x,y,yaw %f, %f, %f",target_x_,target_y_,target_yaw_);
+		/* resends the old goal that was cancelled due to bumpsensor */
 		sendGoal(target_x_,target_y_,target_yaw_);
     	state_ = current_state::AUTONOMOUS;
 
@@ -389,7 +394,9 @@ void UnicornState::active()
 	  	if(move_base_clt_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
 	  	{
 	    	ROS_INFO("[unicorn_statemachine] Goal reached");
-	    	state_ = current_state::IDLE;
+
+	    	state_= current_state::LIFT;
+	    	//state_ = current_state::IDLE;
 	    	printUsage();
 	  	}
 		break;
@@ -401,7 +408,7 @@ void UnicornState::active()
 			{
 
 				man_cmd_vel_.angular.z += MAX_ANGULAR_VEL;
-				current_ang_vel_ = man_cmd_vel_.angular.z;
+
 			}
 		}
 		else if (c == 'w')
@@ -431,6 +438,35 @@ void UnicornState::active()
 		break;
 
 		case current_state::LOADING:
+			break;
+
+		case current_state::LIFT:
+			ROS_INFO("[unicorn_statemachine] lift signal is %d", lifted_);
+  			if (lifted_ == 0 || lifted_ == 1)
+  				{}
+  			else
+  			{
+  				lifted_ == 0;
+  			}
+  			ROS_INFO("[unicorn_statemachine] lifter_: %d",lifted_);
+
+
+			if (lifted_ == 0)
+			{
+				lift_.data = 1;
+				lifted_ = 1;
+			}
+			else
+			{
+				lift_.data = 0;
+				lifted_ = 0;
+			}
+			ROS_INFO("[unicorn_statemachine] send lift signal %d",lift_.data);
+			lift_pub_.publish(lift_);
+			state_ = current_state::IDLE;
+			break;
+
+
 		
 		switch(loading_state_)
 		{
@@ -505,6 +541,7 @@ void UnicornState::active()
 				}
 				cmd_vel_pub_.publish(man_cmd_vel_);
 				break;
+
 			default:
 				break;
 		}

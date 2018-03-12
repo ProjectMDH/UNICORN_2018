@@ -18,7 +18,7 @@
 #include <sensor_msgs/Range.h>
 #include <unicorn/CharlieCmd.h>
 #include <std_msgs/Bool.h>
-
+#include <std_msgs/Int8.h>
 /* C / C++ */
 #include <iostream>
 #include <termios.h>
@@ -45,7 +45,8 @@ namespace current_state
 		IDLE,
 		ALIGNING,
 		EXITING,
-		ENTERING
+		ENTERING,
+		LIFT
 	};
 }
 
@@ -167,27 +168,29 @@ private:
 	ros::Publisher move_base_cancel_pub_;
 	ros::Subscriber odom_sub_;
 	ros::Subscriber bumper_sub_;
+	ros::Publisher lift_pub_;
 	geometry_msgs::Twist man_cmd_vel_;
 	MoveBaseClient move_base_clt_; 		/**< Client used to send commands to move_base*/
 	std::string frame_id_;
 	tf::TransformListener tf_listener_;
 	RefuseBin refuse_bin_pose_;
 	PidController* velocity_pid_; /**< PID to control position in x*/
-
+	std_msgs::Int8 lift_;
 
 	int state_, loading_state_; 
 	int move_base_active_;
+	int lifted_; // 1 for lifted 0 for down;
 	double current_yaw_;
 	double current_vel_;
-	double current_ang_vel_;
-	double old_vel_;
-	double old_ang_vel_;
+
 	double MAX_ANGULAR_VEL;
 	double MAX_LINEAR_VEL;
 	bool bumperPressed_;
 	float target_x_;
 	float target_y_;
 	float target_yaw_;
+
+	
 	/*
 	std::map<std::string, RangeSensor*> range_sensor_list_; /**< List of active rangesensors
 	*/
