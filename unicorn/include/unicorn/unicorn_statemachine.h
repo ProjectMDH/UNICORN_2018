@@ -46,7 +46,8 @@ namespace current_state
 		ALIGNING,
 		EXITING,
 		ENTERING,
-		LIFT
+		LIFT,
+		REVERSING
 	};
 }
 
@@ -182,6 +183,8 @@ private:
 	int lifted_; // 1 for lifted 0 for down;
 	double current_yaw_;
 	double current_vel_;
+	bool reversing_;
+
 
 	double MAX_ANGULAR_VEL;
 	double MAX_LINEAR_VEL;
@@ -189,6 +192,7 @@ private:
 	float target_x_;
 	float target_y_;
 	float target_yaw_;
+
 
 	
 	/*

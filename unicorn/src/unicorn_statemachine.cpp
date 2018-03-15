@@ -58,8 +58,8 @@ void PidController::control(float& var, float error)
 
 RefuseBin::RefuseBin()
 {
-	x = 0;
-	y = 0;
+	x = 5.0;
+	y = 5.0;
 	yaw = 0;
 }
 
@@ -121,7 +121,7 @@ UnicornState::UnicornState()
   lift_pub_ =n_.advertise<std_msgs::Int8>("/lift",0);
   odom_sub_ = n_.subscribe(odom_topic.c_str(), 0, &UnicornState::odomCallback, this);
   acc_cmd_srv_ = n_.advertiseService("cmd_charlie", &UnicornState::accGoalServer, this);
-  bumper_sub_ = n_.subscribe("pushed",0, &UnicornState::bumperCallback, this);
+  bumper_sub_ = n_.subscribe("rearBumper",0, &UnicornState::bumperCallback, this);
 
 
 
@@ -197,11 +197,25 @@ std::string UnicornState::stateToString(int state)
 		case current_state::IDLE:
 		return "IDLE";
 
+		case current_state::LIFT:
+		return "LIFT";
+
+		case current_state::REVERSING:
+		return "REVERSING";
+
+		case current_state::ALIGNING:
+		return "ALIGNING";
+
+		case current_state::ENTERING:
+		return "ENTERING";
+
+		case current_state::EXITING:
+		return "EXITING";
+
 		default:
 		return "INVALID STATE";
 
-		case current_state::LIFT:
-		return "LIFT";
+		
 	}
 }
 
@@ -308,8 +322,9 @@ void UnicornState::processKey(int c)
    	std::cout << "Refuse bin yaw: ";
    	if(!getInput(refuse_bin_pose_.yaw))
    		return;
-  	state_ = current_state::LOADING;
-  	loading_state_ = current_state::ALIGNING;
+  //	state_ = current_state::LOADING;
+   	state_ = current_state::ALIGNING;
+  	//loading_state_ = current_state::ALIGNING;
   	man_cmd_vel_.angular.z = 0;
 	man_cmd_vel_.linear.x = 0;
   	printUsage();
@@ -328,6 +343,10 @@ void UnicornState::processKey(int c)
    	sendMoveCmd(x,y,yaw);
    	state_ = current_state::AUTONOMOUS;
    	printUsage();
+  }
+  else if (c =='6')
+  {
+  	state_ = current_state::ALIGNING;
   }
 }
 
@@ -351,21 +370,29 @@ void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 	int tmp_vel, tmp_angvel;
 
 	/* bumpsensor activated and stop the agent */
-	if (pushed_msg.data == true)
-	{
-		
-		ROS_INFO("BUMPER IS PUSHED");
-		cancelGoal();
-		man_cmd_vel_.angular.z = 0;
-		man_cmd_vel_.linear.x = 0;
-	}
-	else if (pushed_msg.data == false)
-	{
-		/* resends the old goal that was cancelled due to bumpsensor */
-		sendGoal(target_x_,target_y_,target_yaw_);
-    	state_ = current_state::AUTONOMOUS;
+	bumperPressed_ = 0;
 
-	}
+		if (pushed_msg.data == true)
+		{
+			bumperPressed_ = 1;
+			ROS_INFO("BUMPER IS PUSHED");
+			cancelGoal();
+			man_cmd_vel_.angular.z = 0;
+			man_cmd_vel_.linear.x = 0;
+		}
+	
+		if (reversing_ == 0)
+		{
+			if (pushed_msg.data == false)
+			{		/* resends the old goal that was cancelled due to bumpsensor */
+				bumperPressed_ = 0;
+				sendGoal(target_x_,target_y_,target_yaw_);
+    			state_ = current_state::AUTONOMOUS;
+
+			}
+		}
+
+	
 	
 
 }
@@ -394,8 +421,8 @@ void UnicornState::active()
 	  	if(move_base_clt_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
 	  	{
 	    	ROS_INFO("[unicorn_statemachine] Goal reached");
-
-	    	state_= current_state::LIFT;
+	    	state_ = current_state::IDLE;
+	    	//state_= current_state::LIFT;
 	    	//state_ = current_state::IDLE;
 	    	printUsage();
 	  	}
@@ -442,6 +469,7 @@ void UnicornState::active()
 
 		case current_state::LIFT:
 			ROS_INFO("[unicorn_statemachine] lift signal is %d", lifted_);
+			//	reversing_ = 0;
   			if (lifted_ == 0 || lifted_ == 1)
   				{}
   			else
@@ -463,7 +491,76 @@ void UnicornState::active()
 			}
 			ROS_INFO("[unicorn_statemachine] send lift signal %d",lift_.data);
 			lift_pub_.publish(lift_);
+
 			state_ = current_state::IDLE;
+			break;
+
+		case current_state::ALIGNING:
+
+			if (!move_base_active_)
+		   	{
+
+		   		ROS_INFO("[unicorn_statemachine] Aligning with garbage disposal...");
+
+		   		sendGoal(refuse_bin_pose_.x + 1.5*cos(refuse_bin_pose_.yaw)
+		   			,refuse_bin_pose_.y + 1.5*sin(refuse_bin_pose_.yaw)
+		   			,refuse_bin_pose_.yaw);
+		   		move_base_active_ = 1;
+
+		   		return;
+		   	}
+		    if (move_base_clt_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+		    {
+		    	move_base_active_ = 0;
+		    	reversing_ = 1;
+		    	state_ = current_state::ENTERING;
+		    	//loading_state_ = current_state::ENTERING;
+		    	ROS_INFO("[unicorn_statemachine] Entering garbage disposal");
+		    }
+			break;
+			/** Moves the machine close to a wall.
+			* Slows down the machine when range to wall is below 30cm.
+			*/
+		case current_state::ENTERING:
+	
+			man_cmd_vel_.angular.z = 0;		
+			reversing_ = 1;
+
+			ROS_INFO("Current vel: %f", current_vel_);
+			ROS_INFO("[unicorn_statemachine] bumperPressed_  %d", bumperPressed_);
+			if (bumperPressed_ == 1)
+			{
+				man_cmd_vel_.linear.x = 0.0;
+				cancelGoal();
+				state_ = current_state::LIFT;
+				ROS_INFO("[unicorn_statemachine] Entered garbage disposal. Waiting for exit signal");
+			}
+			else
+			{
+				man_cmd_vel_.linear.x = -0.1;
+			}
+		//		}
+			cmd_vel_pub_.publish(man_cmd_vel_);
+
+			break;
+
+		case current_state::EXITING:
+			printUsage();
+			if (c == 'k')
+			{
+	    		ROS_INFO("[unicorn_statemachine] Exiting garbage disposal");
+	    		man_cmd_vel_.linear.x = 0.15;
+			}
+			//	if ((current_range > 1.0)
+			//		&&(current_range < 2.0))
+			{
+				man_cmd_vel_.linear.x = 0.0;
+				ROS_INFO("[unicorn_statemachine] Loading complete!");
+				state_ = current_state::IDLE;
+				printUsage();
+			}
+			cmd_vel_pub_.publish(man_cmd_vel_);
+			reversing_ = 0;
 			break;
 
 
@@ -471,6 +568,7 @@ void UnicornState::active()
 		switch(loading_state_)
 		{
 			case current_state::ALIGNING:
+			ROS_INFO("[unicorn_statemachine] ALIGING STATE");
 				if (!move_base_active_)
 		    	{
 		    		ROS_INFO("[unicorn_statemachine] Aligning with garbage disposal...");
@@ -492,6 +590,7 @@ void UnicornState::active()
 			*/
 			case current_state::ENTERING:
 				man_cmd_vel_.angular.z = 0;
+				reversing_ = 1;
 				// float current_range = (range_sensor_list_["ultrasonic_bmr"]->getRange()*sin(M_PI/6) +
 				// 					  range_sensor_list_["ultrasonic_bml"]->getRange()*sin(M_PI/6)) / 2;
 				// ROS_INFO("current range: %f", current_range);
@@ -510,11 +609,13 @@ void UnicornState::active()
 				//else
 				//{
 					ROS_INFO("Current vel: %f", current_vel_);
-					if (std::abs(current_vel_) < 0.05)
+					ROS_INFO("[unicorn_statemachine] bumperPressed_ 2 %d", bumperPressed_);
+					if (bumperPressed_ == 1)
 					{
 						man_cmd_vel_.linear.x = 0.0;
 						loading_state_ = current_state::EXITING;
 						ROS_INFO("[unicorn_statemachine] Entered garbage disposal. Waiting for exit signal");
+
 					}
 					else
 					{
@@ -540,6 +641,7 @@ void UnicornState::active()
 					printUsage();
 				}
 				cmd_vel_pub_.publish(man_cmd_vel_);
+				reversing_ = 0;
 				break;
 
 			default:
