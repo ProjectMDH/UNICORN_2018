@@ -4,7 +4,7 @@
 <!-- roslaunch arguments -->
 <arg name="debug" default="false"/>
 <arg name="use_gmapping" default="true"/>
-<arg name="use_orbbec" default="true"/> <!-- Set to false if using zed camera / true for orbbec -->
+<arg name="use_orbbec" default="false"/> <!-- Set to false if using zed camera / true for orbbec -->
 <arg name="scan_topic" value="scan_filtered"/>
 <arg name="map_file" value="$(find unicorn_slam)/maps/hospital_map_3.yaml"/>
 <arg name="lidar_ip" default="192.168.0.100" />
@@ -84,20 +84,16 @@
 </group>
 
 <!-- load joint controller configurations from YAML file to parameter server -->
-<!-- <rosparam file="$(find am_control)/config/joint_position_control.yaml" command="load" /> -->
+<rosparam file="$(find am_control)/config/joint_position_control.yaml" command="load" />
 
 <!-- Urdf xml robot description loaded on the Parameter Server-->
-<!--
 <param name="robot_description" command="$(find xacro)/xacro.py '$(find unicorn_description)/urdf/unicorn_target.urdf.xacro'" />
--->
 <!-- Starts interface between automower and unicorn to enable backward driving -->
-<!--
 <node name="am_unicorn_interface" 
 	pkg="unicorn" 
 	type="am_unicorn_interface" 
 	output="screen">
 </node>
--->
 
 <!-- Starts interface between automower and unicorn to enable backward driving -->
 <!--
@@ -113,7 +109,7 @@
 -->
 
 <!-- Start the am_driver -->
-<!--
+
 <node name="am_driver_safe" pkg="am_driver_safe" type="am_driver_safe_node" output="screen">
 	<param name="serialPort" value="/dev/ttyACM0" type="str" />
 	<param name="printCharge" value="false"/>
@@ -124,7 +120,7 @@
 	<param name="hil" value="0"/>
 	<param name="jsonFile" value="$(find am_driver_safe)/config/automower_hrp.json" type="string" />
 </node> 
--->
+
 
 <!-- Start the Sick LMS111 driver -->
 <!--
