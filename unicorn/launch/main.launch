@@ -46,6 +46,7 @@
 <!-- Run zed camera -->
  <group ns="zed">
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
+	<!--<arg name="camera_model" value="0"/> -->
         <arg name="publish_tf" value="false"/>
         <arg name="publish_urdf" value="false"/>
         <arg name="odometry_frame" value="odom"/>

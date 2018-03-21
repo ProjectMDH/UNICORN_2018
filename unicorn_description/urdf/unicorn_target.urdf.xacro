@@ -17,15 +17,23 @@
               izz="${m*(x*x+z*z)/12}" />
   </macro>
 
+
+<!-- NOT USED ANYMORE SINCE CHANGE OR LIDAR -->
   <!-- LMS111 -->
-  <xacro:arg name="laser_xyz" default="0.0 0.0 0.5" />
+<!--  <xacro:arg name="laser_xyz" default="0.0 0.0 0.5" />
   <xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI-M_PI/4}" />
   <xacro:include filename="$(find lms1xx)/urdf/sick_lms1xx.urdf.xacro" />
+-->
 
   <!-- Ultrasonic sensor -->
   <xacro:arg name="ultrasonic_xyz" default="-0.3 0 0.2" />
   <xacro:arg name="ultrasonic_rpy" default="0 0 0" />
   <xacro:include filename="$(find unicorn_description)/urdf/ultrasonic_sensor.urdf.xacro" />
+
+  <!-- RPLIDAR A2 -->
+  <xacro:arg name="laser_xyz" default="0.0 0.0 0.5" />
+  <xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI-M_PI/4}" />
+  <xacro:include filename="$(find unicorn_description)/urdf/rplidar_a2.urdf.xacro" />
 
   <!-- Wheel -->
   <xacro:include filename="$(find am_description)/urdf/wheel.urdf.xacro" />
@@ -300,13 +308,26 @@
     <child link="base_ultrasonic_fml" />
   </joint>
 
-    <sick_lms1xx frame="base_laser" topic="scan" robot_namespace="$(arg robot_namespace)"/>
+
+<!-- NOT USED ANYMORE SINCE CHANGE OF LIDAR -->
+  <!--  <sick_lms1xx frame="base_laser" topic="scan" robot_namespace="$(arg robot_namespace)"/>
 
     <joint name="laser_mount_joint" type="fixed">
       <origin xyz="$(arg laser_xyz)" rpy="$(arg laser_rpy)" />
       <parent link="chassis_link" />
       <child link="base_laser" />
     </joint>
+-->
+
+
+   <rplidar_a2 frame="base_laser" topic="scan" robot_namespace="$(arg robot_namespace)"/>
+   
+   <joint name="laser_mount_joint" type="fixed">
+      <origin xyz="$(arg laser_xyz)" rpy="$(arg laser_rpy)" />
+      <parent link="chassis_link" />
+      <child link="base_laser" />
+   </joint>
+   
 
   <!-- GAZEBO STUFF -->
   <gazebo>
