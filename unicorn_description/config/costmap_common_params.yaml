@@ -4,7 +4,6 @@ footprint_padding: 0.0
 plugins:
   - {name: static_layer,     type: "costmap_2d::StaticLayer"}
   - {name: obstacle_layer,    type: "costmap_2d::ObstacleLayer"}
-  - {name: sonar_layer,       type: "range_sensor_layer::RangeSensorLayer"}
   #- {name: voxel_layer,       type: "costmap_2d::VoxelLayer"}
   - {name: inflation_layer,   type: "costmap_2d::InflationLayer"}
 
@@ -37,8 +36,13 @@ obstacle_layer:
   #Configuration for the sensors that the costmap will use to update a map
   observation_sources: laser_scan_sensor point_cloud_sensor
 
-  laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: /scan_filtered, expected_update_rate: 0.5,
+ # laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: /scan_filtered, expected_update_rate: 0.5,
+ #   marking: true, clearing: true, max_obstacle_height: 1, min_obstacle_height: 0.08}
+
+    #testing with 360 degrees of view from LIDAR
+  laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: /scan, expected_update_rate: 0.5,
     marking: true, clearing: true, max_obstacle_height: 1, min_obstacle_height: 0.08}
+
     
   point_cloud_sensor: {sensor_frame: camera_left_depth_link, data_type: PointCloud2, topic: /camera/depth/points,
     marking: true, clearing: true, max_obstacle_height: 2, min_obstacle_height: 0.08}
@@ -46,10 +50,10 @@ obstacle_layer:
 
 
 
-sonar_layer:
- topics: [ '/ultrasonic_fr', '/ultrasonic_fm', '/ultrasonic_fl', '/ultrasonic_br', '/ultrasonic_bm', '/ultrasonic_bl', '/ultrasonic_rm', '/ultrasonic_lm', '/ultrasonic_r', '/ultrasonic_l' ]
- no_readings_timeout: 1.0
- clear_on_max_reading: true
+#sonar_layer:
+# topics: [ '/ultrasonic_fr', '/ultrasonic_fm', '/ultrasonic_fl', '/ultrasonic_br', '/ultrasonic_bm', '/ultrasonic_bl', '/ultrasonic_rm', '/ultrasonic_lm', '/ultrasonic_r', '/ultrasonic_l' ]
+# no_readings_timeout: 1.0
+# clear_on_max_reading: true
 
 
 
