@@ -6,9 +6,9 @@
   <!--All units in m-kg-s-radians unit system -->
   <property name="M_PI" value="3.1415926535897931" />
   <!-- Main Body-base -->
-  <property name="base_x_size" value="0.72" />
-  <property name="base_y_size" value="0.55" />
-  <property name="base_z_size" value="0.6" />
+  <property name="base_x_size" value="0.70" />
+  <property name="base_y_size" value="0.49" />
+  <property name="base_z_size" value="0.44" />
   <property name="base_mass" value="15" /> <!-- 21.446 in kg-->
   <!--Inertial macros for the box and cylinder. Units are kg*m^2-->
   <macro name="box_inertia" params="m x y z">
@@ -26,10 +26,10 @@
 -->
 
   <!-- Ultrasonic sensor -->
-  <xacro:arg name="ultrasonic_xyz" default="-0.3 0 0.2" />
+<!--  <xacro:arg name="ultrasonic_xyz" default="-0.3 0 0.2" />
   <xacro:arg name="ultrasonic_rpy" default="0 0 0" />
   <xacro:include filename="$(find unicorn_description)/urdf/ultrasonic_sensor.urdf.xacro" />
-
+-->
   <!-- RPLIDAR A2 -->
   <xacro:arg name="laser_xyz" default="0.0 0.0 0.5" />
   <xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI-M_PI/4}" />
@@ -258,7 +258,7 @@
   <swivel_wheel fb="front" lr="left" parent="chassis_link" translateY="-0.16" translateX="0.355" translateZ="0.03" wheel_radius="0.05" wheel_height="0.05" flip="0"/>
   <swivel_wheel fb="front" lr="right" parent="chassis_link" translateY="0.16" translateX="0.355" translateZ="0.03" wheel_radius="0.05" wheel_height="0.05" flip="0"/>
 
-  
+ <!-- 
   <ultrasonic_sensor frame="base_ultrasonic_br" topic="br" robot_namespace="$(arg robot_namespace)"/>
   <joint name="ultrasonic_mount_joint_br" type="fixed">
     <origin xyz="0.45 0.2 0.0" rpy="0 0 ${3*M_PI/4}"/>
@@ -307,7 +307,7 @@
     <parent link="chassis_link"/>
     <child link="base_ultrasonic_fml" />
   </joint>
-
+-->
 
 <!-- NOT USED ANYMORE SINCE CHANGE OF LIDAR -->
   <!--  <sick_lms1xx frame="base_laser" topic="scan" robot_namespace="$(arg robot_namespace)"/>
