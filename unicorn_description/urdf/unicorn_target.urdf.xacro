@@ -32,7 +32,7 @@
 -->
   <!-- RPLIDAR A2 -->
   <xacro:arg name="laser_xyz" default="0.0 0.0 0.5" />
-  <xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI-M_PI/4}" />
+  <xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI}" />
   <xacro:include filename="$(find unicorn_description)/urdf/rplidar_a2.urdf.xacro" />
 
   <!-- Wheel -->

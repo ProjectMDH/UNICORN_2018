@@ -5,8 +5,8 @@
 <arg name="debug" default="false"/>
 <arg name="use_gmapping" default="true"/>
 <arg name="use_orbbec" default="false"/> <!-- Set to false if using zed camera / true for orbbec -->
-<arg name="scan_topic" value="scan_filtered"/>
-<arg name="map_file" value="$(find unicorn_slam)/maps/hospital_map_3.yaml"/>
+<arg name="scan_topic" value="scan"/>
+<arg name="map_file" value="$(find unicorn_slam)/maps/projroom.yaml"/>
 <arg name="lidar_ip" default="192.168.0.100" />
 
 <rosparam param="frame_id">base_link</rosparam>
@@ -46,14 +46,16 @@
 <!-- Run zed camera -->
  <group ns="zed">
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
-	<!--<arg name="camera_model" value="0"/> -->
+	<arg name="gpu_id" value="-1"/>
+	<arg name="camera_model" value="0"/>
         <arg name="publish_tf" value="false"/>
         <arg name="publish_urdf" value="false"/>
         <arg name="odometry_frame" value="odom"/>
         <arg name="base_frame" value="zed_center"/>
         <arg name="camera_frame" value="zed_left_camera"/>
         <arg name="depth_frame" value="zed_depth_camera"/>
-        <arg name="confidence_val" value="80"/>
+	
+       <!--  <arg name="confidence_val" value="80"/> -->
     </include>
 </group>
 
@@ -136,7 +138,7 @@
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
   <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
   <param name="serial_baudrate"     type="int"    value="115200"/>
-  <param name="frame_id"            type="string" value="laser"/>
+  <param name="frame_id"            type="string" value="base_laser"/>
   <param name="inverted"            type="bool"   value="false"/>
   <param name="angle_compensate"    type="bool"   value="true"/>
   </node>

@@ -35,8 +35,8 @@ obstacle_layer:
   observation_sources: laser_scan_sensor point_cloud_sensor
 
   #Lidar params
-  # laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: /scan_filtered, expected_update_rate: 0.5,
-  #    marking: true, clearing: true, max_obstacle_height: 1, min_obstacle_height: 0.08}
+  laser_scan_sensor: {sensor_frame: base_laser, data_type: LaserScan, topic: /scan_filtered, expected_update_rate: 0.5,
+     marking: true, clearing: true, max_obstacle_height: 1, min_obstacle_height: 0.08}
 
   #Stereo camera params
   point_cloud_sensor: {sensor_frame: zed_center, data_type: PointCloud2, topic: /cloud_filtered, expected_update_rate: 1.0,
@@ -45,9 +45,9 @@ obstacle_layer:
 #Ultrasonic sensors params
 #sonar_layer:
 #  topics: ['/ultrasonic_br', '/ultrasonic_bmr', '/ultrasonic_bml', '/ultrasonic_bl'] #, '/ultrasonic_fl', '/ultrasonic_fr', '/ultrasonic_fmr', '/ultrasonic_fml']
-#  no_readings_timeout: 0.5
- # clear_on_max_reading: false
- # clear_threshold: 0.6
- # mark_threshold: 0.95
+  no_readings_timeout: 0.5
+  clear_on_max_reading: false
+  clear_threshold: 0.6
+  mark_threshold: 0.95
 
   
