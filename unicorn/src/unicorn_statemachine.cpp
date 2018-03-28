@@ -367,28 +367,34 @@ void UnicornState::odomCallback(const nav_msgs::Odometry& msg)
 
 void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 {
-	int tmp_vel, tmp_angvel;
 
 	/* bumpsensor activated and stop the agent */
 	bumperPressed_ = 0;
 
 		if (pushed_msg.data == true)
 		{
-			bumperPressed_ = 1;
-			ROS_INFO("BUMPER IS PUSHED");
-			cancelGoal();
-			man_cmd_vel_.angular.z = 0;
-			man_cmd_vel_.linear.x = 0;
+			if (state_ == current_state::AUTONOMOUS || current_state::ALIGNING || current_state::ENTERING)
+			{
+				bumperPressed_ = 1;
+				ROS_INFO("BUMPER IS PUSHED");
+				cancelGoal();
+				man_cmd_vel_.angular.z = 0;
+				man_cmd_vel_.linear.x = 0;
+			}
 		}
 	
 		if (reversing_ == 0)
 		{
-			if (pushed_msg.data == false)
-			{		/* resends the old goal that was cancelled due to bumpsensor */
-				bumperPressed_ = 0;
-				sendGoal(target_x_,target_y_,target_yaw_);
-    			state_ = current_state::AUTONOMOUS;
 
+			if (pushed_msg.data == false)
+			{		
+				if (state_ == current_state::AUTONOMOUS || current_state::ALIGNING || current_state::ENTERING)
+				{
+					/* resends the old goal that was cancelled due to bumpsensor */
+					bumperPressed_ = 0;
+					sendGoal(target_x_,target_y_,target_yaw_);
+    				state_ = current_state::AUTONOMOUS;
+    			}
 			}
 		}
 
