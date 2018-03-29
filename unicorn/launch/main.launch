@@ -99,17 +99,17 @@
 </node>
 
 <!-- Starts interface between automower and unicorn to enable backward driving -->
-<!--
+
 <node name="range_sensor_driver" 
 	pkg="unicorn" 
 	type="range_sensor_driver" 
 	output="screen">
 <rosparam>
- serial_port: "/dev/ttyACM1"
- topics: ['/ultrasonic_br', '/ultrasonic_bmr', '/ultrasonic_bml', '/ultrasonic_bl', '/ultrasonic_fl', '/ultrasonic_fml', '/ultrasonic_fmr', '/ultrasonic_fr']
+ serial_port: "/dev/ttyACM2"
+ topics: ['/ultrasonic_br','/ultrasonic_bl']
 </rosparam>
 </node>
--->
+
 
 <!-- Start the am_driver -->
 

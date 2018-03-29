@@ -63,6 +63,25 @@ RefuseBin::RefuseBin()
 	yaw = 0;
 }
 
+RangeSensor::RangeSensor(const std::string& sensor_topic)
+: TOPIC(sensor_topic)
+{
+	range_sub_ = n_.subscribe(TOPIC.c_str(), 0, &RangeSensor::rangeCallback, this);
+	range_ = 2.0;
+}
+
+void RangeSensor::rangeCallback(const sensor_msgs::Range& msg)
+{
+	range_ = msg.range;
+
+}
+
+float RangeSensor::getRange()
+{
+	return range_;
+}
+
+
 
 UnicornState::UnicornState() 
 : move_base_clt_("move_base", true)
@@ -104,6 +123,17 @@ UnicornState::UnicornState()
   odom_sub_ = n_.subscribe(odom_topic.c_str(), 0, &UnicornState::odomCallback, this);
   acc_cmd_srv_ = n_.advertiseService("cmd_charlie", &UnicornState::accGoalServer, this);
   bumper_sub_ = n_.subscribe("rearBumper",0, &UnicornState::bumperCallback, this);
+
+  if(sim_time)
+  {
+	range_sensor_list_["ultrasonic_bm"] = new RangeSensor("ultrasonic_bm");
+  }
+  else
+  {
+  	range_sensor_list_["ultrasonic_bmr"] = new RangeSensor("ultrasonic_bmr");
+  	range_sensor_list_["ultrasonic_bml"] = new RangeSensor("ultrasonic_bml");
+}
+
 
   n_.getParam("global_local", run_global_loc);
   if (run_global_loc)
@@ -341,7 +371,7 @@ void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 
 	if (pushed_msg.data == true)
 	{
-		if (state_ == (current_state::AUTONOMOUS || current_state::ALIGNING || current_state::ENTERING))
+		if ((state_ == current_state::AUTONOMOUS) || (state_ == current_state::ALIGNING) || (state_ == current_state::ENTERING))
 		{
 			bumperPressed_ = 1;
 			ROS_INFO("BUMPER IS PUSHED");
@@ -354,8 +384,9 @@ void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 	if (reversing_ == 0)
 	{
 		if (pushed_msg.data == false)
-		{		
-			if (state_ == (current_state::AUTONOMOUS || current_state::ALIGNING || current_state::ENTERING))
+		{	
+			if ((state_ == current_state::AUTONOMOUS) || (state_ == current_state::ALIGNING) || (state_ == current_state::ENTERING))
+				
 			{
 				/* resends the old goal that was cancelled due to bumpsensor */
 				bumperPressed_ = 0;
@@ -370,6 +401,13 @@ void UnicornState::active()
 {
 	int c = getCharacter();
 	processKey(c);
+
+	float current_range = 0;
+	for (std::map<std::string, RangeSensor*>::iterator it = range_sensor_list_.begin(); it != range_sensor_list_.end(); ++it)
+	{
+		current_range += it->second->getRange();
+	}
+current_range /= range_sensor_list_.size();
 	
 	switch(state_)
 	{
@@ -438,7 +476,7 @@ void UnicornState::active()
 			if (lifted_ == 0)
 			{
 				lift_.data = 1;
-				lifted_ = 1;
+					lifted_ = 1;
 			}
 			else
 			{
@@ -481,6 +519,7 @@ void UnicornState::active()
 	
 			man_cmd_vel_.angular.z = 0;		
 			reversing_ = 1;
+			man_cmd_vel_.linear.x = 0.2;
 
 			ROS_INFO("Current vel: %f", current_vel_);
 			ROS_INFO("[unicorn_statemachine] bumperPressed_  %d", bumperPressed_);
@@ -516,8 +555,8 @@ void UnicornState::active()
 			cmd_vel_pub_.publish(man_cmd_vel_);
 			reversing_ = 0;
 			break;
-		}
 	}
+}
 
 int UnicornState::sendGoal(const float& x, float y, float yaw)
 {

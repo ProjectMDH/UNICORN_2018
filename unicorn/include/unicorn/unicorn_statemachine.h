@@ -1,6 +1,7 @@
 /** 
 *	@file unicorn_statemachine.h
-*	@Author Alexander Karlsson (akn13013@student.mdh.se)
+*	@ Original Author Alexander Karlsson (akn13013@student.mdh.se)
+	@ Build upon by Billy Lindgren (bln13004@student.mdh.se)
 */
 
 #ifndef UNICORN_STATEMACHINE_H
@@ -91,9 +92,7 @@ private:
 	double lower_limit_, upper_limit_;
 };
 
-/** @brief Class for reading data of rangesensors*/
-
-/*class RangeSensor
+class RangeSensor
 {
 public:
 	RangeSensor(const std::string& sensor_topic);
@@ -105,7 +104,7 @@ private:
 	ros::Subscriber range_sub_;
 
 	float range_;	
-};*/
+};
 
 /** @brief Main node class for unicorn_statemachine.
 *
@@ -195,9 +194,9 @@ private:
 
 
 	
-	/*
-	std::map<std::string, RangeSensor*> range_sensor_list_; /**< List of active rangesensors
-	*/
+	
+	std::map<std::string, RangeSensor*> range_sensor_list_; /**< List of active rangesensors */
+	
 	
 };
 
