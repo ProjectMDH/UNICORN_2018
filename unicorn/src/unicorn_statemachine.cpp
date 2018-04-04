@@ -58,8 +58,8 @@ void PidController::control(float& var, float error)
 
 RefuseBin::RefuseBin()
 {
-	x = 5.0;
-	y = 5.0;
+	x = 8.0;
+	y = -2.0;
 	yaw = 0;
 }
 
@@ -323,8 +323,8 @@ void UnicornState::processKey(int c)
   //	state_ = current_state::LOADING;
    	state_ = current_state::ALIGNING;
   	//loading_state_ = current_state::ALIGNING;
-  	man_cmd_vel_.angular.z = 0;
-	man_cmd_vel_.linear.x = 0;
+//  	man_cmd_vel_.angular.z = 0;
+//	man_cmd_vel_.linear.x = 0;
   	printUsage();
   }
   else if (c == '5')
