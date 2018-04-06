@@ -346,10 +346,9 @@ void UnicornState::processKey(int c)
   {
   	state_ = current_state::ALIGNING;
   }
-  else if (c == '7')
+    else if (c =='7')
   {
-	bumperPressed_ = 0;
-	state_ = current_state::ENTERING;
+  	state_ = current_state::ALIGNING;
   }
 }
 
@@ -645,4 +644,98 @@ void UnicornState::cancelGoal()
 	actionlib_msgs::GoalID cancel_all;
     move_base_cancel_pub_.publish(cancel_all);
     ROS_INFO("[unicorn_statemachine] Canceling move_base goal");
+}
+
+void UnicornState::giveOrder()
+{
+	/* takes input to a goal in x,y and yaw */
+	float x,y,yaw;
+	std::cout << "Target x: ";
+  		if(!getInput(x))
+  		{
+  			
+    		return;
+  		}
+    	std::cout << "Target y: ";
+    	if(!getInput(y))
+    	{
+    		
+    		return;
+    	}
+    	std::cout << "Target yaw: ";
+    	if(!getInput(yaw))
+    	{
+    		
+    		return;
+    	}
+    	target_x_= x;
+    	target_y_= y;
+    	target_yaw_ = yaw;
+    	sendGoal(x,y,yaw);
+
+	/* Go to a given goal */
+	if(move_base_clt_.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
+	  	{
+	    	ROS_INFO("[unicorn_statemachine] Goal reached");
+	    	if (!holdingBin_)
+	    	{	
+	    		reverse();
+	    		lift();
+	    		// do thit a little while to get away from the rack
+	    		man_cmd_vel_.angular.z = 0;		
+				reversing_ = 1;
+				man_cmd_vel_.linear.x = 0.2;
+				cmd_vel_pub_.publish(man_cmd_vel_);
+				lift();
+				giveOrder();
+
+	    	}
+	    	else if (holdingBin_)
+	    	{
+	    		lift();
+	    		reverse();
+	    		lift();
+	    		giveOrder();
+	    	}
+	  	}
+}
+
+
+void UnicornState::reverse()
+{
+	man_cmd_vel_.angular.z = 0;		
+	reversing_ = 1;
+	man_cmd_vel_.linear.x = -0.2;
+
+	ROS_INFO("Current vel: %f", current_vel_);
+	ROS_INFO("[unicorn_statemachine] bumperPressed_  %d", bumperPressed_);
+	if (bumperPressed_ == 1)
+	{
+		man_cmd_vel_.linear.x = 0.0;
+		cancelGoal();
+		ROS_INFO("[unicorn_statemachine] Entered garbage disposal. Waiting for exit signal");
+		return;
+	}
+	else
+	{
+		man_cmd_vel_.linear.x = -0.1;
+	}
+	
+	cmd_vel_pub_.publish(man_cmd_vel_);
+}
+
+void UnicornState::lift()
+{
+	if (lifted_ == 0)
+	{
+		lift_.data = 1;
+		lifted_ = 1;
+	}
+	else
+	{
+		lift_.data = 0;
+		lifted_ = 0;
+	}
+	ROS_INFO("[unicorn_statemachine] send lift signal %d",lift_.data);
+	lift_pub_.publish(lift_);
 }

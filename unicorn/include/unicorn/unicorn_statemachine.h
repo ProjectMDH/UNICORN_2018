@@ -158,6 +158,17 @@ public:
 	void sendMoveCmd(float x, float y, float yaw);
 	/** @brief Cancels all current goals.*/
 	void cancelGoal();
+
+
+	void giveOrder();
+	/** @brief sends predefined orders */
+
+	void reverse();
+	/** @brief the agent reverse until the bumper is pressed  */
+
+	void lift();
+	/** @brief check if the lift is up and down, and send command to arduino to either raise or lower the lift */
+
 	bool accGoalServer(unicorn::CharlieCmd::Request  &req,
          unicorn::CharlieCmd::Response &res);
 private:
@@ -191,7 +202,7 @@ private:
 	float target_x_;
 	float target_y_;
 	float target_yaw_;
-
+	bool holdingBin_; // if a bin is on Chalie, true else false
 
 	
 	
