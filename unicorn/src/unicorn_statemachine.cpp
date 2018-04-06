@@ -346,6 +346,11 @@ void UnicornState::processKey(int c)
   {
   	state_ = current_state::ALIGNING;
   }
+  else if (c == '7')
+  {
+	bumperPressed_ = 0;
+	state_ = current_state::ENTERING;
+  }
 }
 
 void UnicornState::printUsage()
@@ -519,7 +524,7 @@ current_range /= range_sensor_list_.size();
 	
 			man_cmd_vel_.angular.z = 0;		
 			reversing_ = 1;
-			man_cmd_vel_.linear.x = 0.2;
+			man_cmd_vel_.linear.x = -0.2;
 
 			ROS_INFO("Current vel: %f", current_vel_);
 			ROS_INFO("[unicorn_statemachine] bumperPressed_  %d", bumperPressed_);
