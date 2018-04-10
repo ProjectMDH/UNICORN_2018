@@ -14,7 +14,7 @@ NavfnROS:
   allow_unknown: false # Specifies whether or not to allow navfn to create plans that traverse unknown space.
   default_tolerance: 0.5 # A tolerance on the goal point for the planner.
 
-GlobalPlanner:
+lobalPlanner:
   allow_unknown: false
   use_dijkstra: true
   default_tolerance: 0.2
@@ -57,12 +57,12 @@ TebLocalPlannerROS:
  # GoalTolerance
     
  xy_goal_tolerance: 0.1 
- yaw_goal_tolerance: 0.02 
+ yaw_goal_tolerance: 0.08 
  free_goal_vel: False
  force_reinit_new_goal_tolerance: 3.0
     
  # Obstacles
- min_obstacle_dist: 0.1
+ min_obstacle_dist: 0.07
  include_costmap_obstacles: True
  costmap_obstacles_behind_robot_dist: 1.5
  obstacle_poses_affected: 5

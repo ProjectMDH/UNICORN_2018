@@ -21,7 +21,7 @@ global_costmap:
   static_map: true
   rolling_window: false
   use_first_map_only: true
-  resolution: 0.05
+  resolution: 0.04
 
   inflation_layer:
     inflation_radius: 4
