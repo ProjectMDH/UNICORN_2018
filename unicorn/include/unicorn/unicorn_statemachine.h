@@ -168,9 +168,14 @@ public:
 
 	void lift();
 	/** @brief check if the lift is up and down, and send command to arduino to either raise or lower the lift */
-
+	
 	bool accGoalServer(unicorn::CharlieCmd::Request  &req,
          unicorn::CharlieCmd::Response &res);
+	
+	/* Functions below this comment section are for testing purposes*/
+	void clicked_PointCallback(const geometry_msgs::PointStamped& msg); // this functions needs to subscribe to topic /clicked_point, which gets generated in rviz
+	void rvizWPmaker(double posX, double posY);
+	void pathCreator();
 private:
 	ros::NodeHandle n_;
 	ros::Publisher cmd_vel_pub_;
@@ -204,7 +209,10 @@ private:
 	float target_yaw_;
 	bool holdingBin_; // if a bin is on Chalie, true else false
 
-	
+	//Testing variables here
+	double point_goalX;
+	double point_goalY;
+	//ends here
 	
 	std::map<std::string, RangeSensor*> range_sensor_list_; /**< List of active rangesensors */
 	
