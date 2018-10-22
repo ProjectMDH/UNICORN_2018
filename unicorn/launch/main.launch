@@ -52,8 +52,10 @@
         <arg name="publish_urdf" value="false"/>
         <arg name="odometry_frame" value="odom"/>
         <arg name="base_frame" value="zed_center"/>
+<!-- uncommented by ulrik
         <arg name="camera_frame" value="zed_left_camera"/>
         <arg name="depth_frame" value="zed_depth_camera"/>
+-->
 	
        <!--  <arg name="confidence_val" value="80"/> -->
     </include>
