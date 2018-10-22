@@ -111,9 +111,9 @@ find_package(Boost REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES unicorn
-#  CATKIN_DEPENDS roscpp rospy std_msgs tf
+ CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs actionlib actionlib_msgs tf geometry_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -140,10 +140,8 @@ add_executable(am_unicorn_interface src/am_unicorn_interface.cpp)
 target_link_libraries(am_unicorn_interface ${catkin_LIBRARIES})
 
 add_executable(unicorn_statemachine src/unicorn_statemachine.cpp)
+add_dependencies(unicorn_statemachine ${catkin_EXPORTED_TARGETS})
 target_link_libraries(unicorn_statemachine ${catkin_LIBRARIES})
-
-##add_executable(unicorn_statemachine_test src/unicorn_statemachine_test.cpp)
-##target_link_libraries(unicorn_statemachine_test ${catkin_LIBRARIES})
 
 add_executable(range_sensor_driver src/range_sensor_driver.cpp)
 target_link_libraries(range_sensor_driver ${catkin_LIBRARIES})
