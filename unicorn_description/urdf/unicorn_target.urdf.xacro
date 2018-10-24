@@ -4,18 +4,18 @@
   <!-- PROPERTY LIST -->
   <xacro:arg name="robot_namespace" default="/" />
   <!--All units in m-kg-s-radians unit system -->
-  <property name="M_PI" value="3.1415926535897931" />
+  <xacro:property name="M_PI" value="3.1415926535897931" />
   <!-- Main Body-base -->
-  <property name="base_x_size" value="0.70" />
-  <property name="base_y_size" value="0.49" />
-  <property name="base_z_size" value="0.44" />
-  <property name="base_mass" value="15" /> <!-- 21.446 in kg-->
+  <xacro:property name="base_x_size" value="0.70" />
+  <xacro:property name="base_y_size" value="0.49" />
+  <xacro:property name="base_z_size" value="0.44" />
+  <xacro:property name="base_mass" value="15" /> <!-- 21.446 in kg-->
   <!--Inertial macros for the box and cylinder. Units are kg*m^2-->
-  <macro name="box_inertia" params="m x y z">
+  <xacro:macro name="box_inertia" params="m x y z">
     <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
               iyy="${m*(x*x+z*z)/12}" iyz = "0"
               izz="${m*(x*x+z*z)/12}" />
-  </macro>
+  </xacro:macro>
 
 
 <!-- NOT USED ANYMORE SINCE CHANGE OR LIDAR -->
