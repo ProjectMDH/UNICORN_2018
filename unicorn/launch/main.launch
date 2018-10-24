@@ -45,17 +45,23 @@
 <group unless="$(arg use_orbbec)">
 <!-- Run zed camera -->
  <group ns="zed">
+
     <include file="$(find zed_wrapper)/launch/zed_camera.launch">
-	<arg name="gpu_id" value="-1"/>
+	
 	<arg name="camera_model" value="0"/>
+	<arg name="gpu_id" value="-1"/>
         <arg name="publish_tf" value="false"/>
         <arg name="publish_urdf" value="false"/>
         <arg name="odometry_frame" value="odom"/>
         <arg name="base_frame" value="zed_center"/>
-<!-- uncommented by ulrik
-        <arg name="camera_frame" value="zed_left_camera"/>
-        <arg name="depth_frame" value="zed_depth_camera"/>
+        <arg name="left_camera_frame" value="zed_left_camera"/>
+	<arg name="right_camera_frame" value="zed_right_camera"/>
+        
+	
+<!-- uncommented by ulrik 
+<arg name="depth_frame" value="zed_depth_camera"/>
 -->
+<!-- -->
 	
        <!--  <arg name="confidence_val" value="80"/> -->
     </include>
@@ -91,8 +97,8 @@
 <!-- load joint controller configurations from YAML file to parameter server -->
 <rosparam file="$(find am_control)/config/joint_position_control.yaml" command="load" />
 
-<!-- Urdf xml robot description loaded on the Parameter Server-->
-<param name="robot_description" command="$(find xacro)/xacro.py '$(find unicorn_description)/urdf/unicorn_target.urdf.xacro'" />
+<!-- Urdf xml robot description loaded on the Parameter Server - added inorder param - changed from xarco.py to xarco -->
+<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find unicorn_description)/urdf/unicorn_target.urdf.xacro'" />
 <!-- Starts interface between automower and unicorn to enable backward driving -->
 <node name="am_unicorn_interface" 
 	pkg="unicorn" 
