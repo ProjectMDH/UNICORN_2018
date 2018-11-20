@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 	while(ros::ok())
 	{
 	  range_driver.readLine();
-      range_driver.publishData();
+          range_driver.publishData();
 	  ros::spinOnce();
 	  r.sleep();
 	}
