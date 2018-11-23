@@ -6,7 +6,7 @@
 <arg name="use_gmapping" default="false"/>
 <arg name="use_orbbec" default="false"/> <!-- Set to false if using zed camera / true for orbbec -->
 <arg name="scan_topic" value="scan"/>
-<arg name="map_file" value="$(find unicorn_slam)/maps/hospital_map_3.yaml"/>
+<arg name="map_file" value="$(find unicorn_slam)/maps/work_room.yaml"/>
 <arg name="lidar_ip" default="192.168.0.100" />
 
 <rosparam param="frame_id">base_link</rosparam>
@@ -68,6 +68,11 @@
     </include>
 </group>
 
+
+<!-- Run UWB added by Marielle -->
+
+<include file="$(find ros_dwm1000)/launch/localize.launch">
+</include>
 
 <!-- Run a VoxelGrid filter to clean NaNs and downsample the pointcloud output goes to cloud_filtered -->
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
@@ -143,6 +148,7 @@
 -->
 
 <!-- Start the RPlidar A2 Driver -->
+<!--
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
   <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
   <param name="serial_baudrate"     type="int"    value="115200"/>
@@ -150,17 +156,17 @@
   <param name="inverted"            type="bool"   value="false"/>
   <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
+-->
 <!-- Start the RPlidar A3 Driver -->
-<!--
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
   <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
-  <param name="serial_baudrate"     type="int"    value="256000"/>
+  <param name="serial_baudrate"     type="int"    value="256000"/><!--A3 -->
   <param name="frame_id"            type="string" value="base_laser"/>
   <param name="inverted"            type="bool"   value="false"/>
   <param name="angle_compensate"    type="bool"   value="true"/>
   <param name="scan_mode"           type="string" value="Sensitivity"/>
   </node>
--->
+
 <!--
 <include file="$(find rplidar_ros)/launch/rplidar_a3.launch">
 </include>
@@ -177,6 +183,9 @@
 	<rosparam file="$(find unicorn)/config/local_costmap_params.yaml" command="load" />
 	<rosparam file="$(find unicorn)/config/global_costmap_params.yaml" command="load" />
 	<remap from="cmd_vel" to="/unicorn/cmd_vel"/>
+
+	<!-- Added by Marielle -->
+	<remap from="amcl_pose" to="odometry/filtered"/>
 </node>
 <!-- source that publishes the joint positions as a sensor_msgs/JointState -->
 <param name="use_gui" value="false"/>
@@ -197,9 +206,13 @@
 </rosparam>
 </node>
 
+<!-- Changes made by Marielle -->
+<rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 
-<node pkg="robot_localization" type="ukf_localization_node" name="ukf_localization_node" clear_params="true">
-   <rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
+<node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_odom" clear_params="true">
+</node>
+
+<node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true">
 </node>
 
 <!-- Starts the Arduino to enable ros and read/ write from it -->
