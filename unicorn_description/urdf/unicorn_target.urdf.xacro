@@ -31,8 +31,10 @@
   <xacro:include filename="$(find unicorn_description)/urdf/ultrasonic_sensor.urdf.xacro" />
 
   <!-- RPLIDAR A2 -->
-  <xacro:arg name="laser_xyz" default="0.18 0.12 0.39" />
-  <xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI}" />
+  <xacro:arg name="laser_rpy" default="0.0 0.0 0.0" />
+  <!--xacro:arg name="laser_rpy" default="0.0 0.0 ${M_PI}" /-->
+  <xacro:arg name="laser_xyz" default="0.14 0.0 0.17" />
+  <!--xacro:arg name="laser_xyz" default="0.18 0.12 0.39" /-->
   <xacro:include filename="$(find unicorn_description)/urdf/rplidar_a2.urdf.xacro" />
 
   <!-- Wheel -->
@@ -40,11 +42,10 @@
 
   <!-- Swivel wheel -->
   <xacro:include filename="$(find am_description)/urdf/swivel_wheel.urdf.xacro" />
-  
   <!-- Materials -->
   <xacro:include filename="$(find am_description)/urdf/materials.urdf.xacro" />
 
-  <link 
+  <link
     name="base_link">
     <inertial>
       <origin
@@ -188,7 +189,7 @@
     <joint name="chassis_zed_joint" type="fixed">
       <parent link="chassis_link"/>
       <child link="zed_center"/>
-      <origin xyz="-0.2 0.0 0.3" rpy="0 0 ${-M_PI}"/>
+     <origin xyz="0.14 0.0 0.11" rpy="0 0 ${-M_PI}"/>
     </joint>
 
 
