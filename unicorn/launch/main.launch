@@ -6,7 +6,9 @@
 <arg name="use_gmapping" default="false"/>
 <arg name="use_orbbec" default="false"/> <!-- Set to false if using zed camera / true for orbbec -->
 <arg name="scan_topic" value="scan"/>
-<arg name="map_file" value="$(find unicorn_slam)/maps/work_room.yaml"/>
+
+<arg name="map_file" value="$(find unicorn_slam)/maps/canteen.yaml"/>
+
 <arg name="lidar_ip" default="192.168.0.100" />
 
 <rosparam param="frame_id">base_link</rosparam>
