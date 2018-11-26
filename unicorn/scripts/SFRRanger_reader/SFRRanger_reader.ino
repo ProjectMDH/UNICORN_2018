@@ -9,8 +9,9 @@
 
 // This example code is in the public domain.
 // The adresses aer from 0xF0 to 0xF7 for the sensors.
+
 #include <Wire.h>
-#include <string.h>
+#include <String.h>
 
 void setup() {
   Wire.begin();                // join i2c bus (address optional for master)
