@@ -137,7 +137,7 @@ if __name__ == '__main__':
     MAX_RANGE = rospy.get_param('/ros_dwm1000/max_range', 12.0)
     REQ_ANCHOR = rospy.get_param('/ros_dwm1000/req_anchor', 3)
     FRAME_ID = rospy.get_param('/ros_dwm1000/frame_id', 'uwb_tag')
-    SERIAL_PORT = rospy.get_param('/ros_dwm1000/serial_port', '/dev/ttyACM0')
+    SERIAL_PORT = rospy.get_param('/ros_dwm1000/serial_port', '/dev/ttyACM3')
 
     #rosparam logs just to make sure parameters kicked in
     rospy.loginfo("%s is %s", rospy.resolve_name('/ros_dwm1000/min_range'), MIN_RANGE)
