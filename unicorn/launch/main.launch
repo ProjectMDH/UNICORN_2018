@@ -121,7 +121,7 @@
 	type="range_sensor_driver" 
 	output="screen">
 <rosparam>
- serial_port: "/dev/ttyACM2"
+ serial_port: "/dev/charlieArduinoRangesensor"
  topics: ['/ultrasonic_br','/ultrasonic_bl']
 </rosparam>
 </node>
@@ -130,7 +130,7 @@
 <!-- Start the am_driver -->
 
 <node name="am_driver_safe" pkg="am_driver_safe" type="am_driver_safe_node" output="screen">
-	<param name="serialPort" value="/dev/ttyACM0" type="str" />
+	<param name="serialPort" value="/dev/charlieHRP" type="str" />
 	<param name="printCharge" value="false"/>
 <!-- Do not publish TF, ukf node should -->
 	<param name="publishTf" value="0"/>
@@ -221,7 +221,7 @@
 
 <!-- Starts the Arduino to enable ros and read/ write from it -->
 <node name="serial_node" pkg="rosserial_python" type="serial_node.py">
-        <param name="port" value="/dev/ttyACM1"/>
+        <param name="port" value="/dev/charlieArduinoBumper"/>
         <param name="baud" value="57600" />
 </node>
 
