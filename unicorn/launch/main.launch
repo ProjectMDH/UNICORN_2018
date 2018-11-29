@@ -150,6 +150,7 @@
 </node>
 -->
 
+
 <!--Start the RPlidar A2 Driver -->
 
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
@@ -159,6 +160,7 @@
   <param name="inverted"            type="bool"   value="false"/>
   <param name="angle_compensate"    type="bool"   value="true"/>
   </node>
+
 <!-- Start the RPlidar A3 Driver -->
 <!--
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
@@ -169,12 +171,8 @@
   <param name="angle_compensate"    type="bool"   value="true"/>
   <param name="scan_mode"           type="string" value="Sensitivity"/>
   </node>
+-->
 
--->
-<!--
-<include file="$(find rplidar_ros)/launch/rplidar_a3.launch">
-</include>
--->
 
 <!-- Launch Move Base -->
 <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
