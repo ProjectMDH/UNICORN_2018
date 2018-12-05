@@ -7,7 +7,7 @@
     <include file="$(find ros_dwm1000)/launch/tf.launch" />
 
     <node pkg="ros_dwm1000" name="ros_dwm1000"  type="localize.py" output="screen">
-        <param name="serial_port" value="/dev/ttyACM3" />
+        <param name="serial_port" value="/dev/charlieTagUWB" />
         <param name="req_anchor" value="3" />
         <param name="min_range" value="0.5" />
         <param name="max_range" value="12.0" />
