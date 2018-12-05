@@ -5,7 +5,7 @@
 <arg name="debug" default="false"/>
 <arg name="use_gmapping" default="false"/>
 <arg name="use_orbbec" default="false"/> <!-- Set to false if using zed camera / true for orbbec -->
-<arg name="scan_topic" value="scan"/>
+<arg name="scan_topic" value="/scan_filtered"/>
 
 <arg name="map_file" value="$(find unicorn_slam)/maps/canteen.yaml"/>
 
@@ -203,8 +203,8 @@
 <!-- Starts laser filter to enable limitation of laserscan angle -->
 <node name="laser_filter" pkg="unicorn" type="laser_scan_filter" output="screen">
 <rosparam>
- upper_angle: 1.57
- lower_angle: -1.57
+ upper_angle: 3.13
+ lower_angle: 0
 </rosparam>
 </node>
 
