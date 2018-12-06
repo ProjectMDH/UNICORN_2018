@@ -100,23 +100,23 @@ void LaserFilter::publishScan()
   scan_pub_.publish(scan_);
 }
 
-void LaserFilter::scanCallback(const sensor_msgs::LaserScan& input_scan)
+void LaserFilter::scanCallback22(const sensor_msgs::LaserScan& input_scan)
 {
     float close = 1000;
     int index = -1;
-	for (unsigned int i = 0; i < input_scan.ranges.size(); ++i)
-    {
-		if (input_scan.ranges[i] < close)
-		{
-			close =input_scan.ranges[i];
-			index = i; 
+		for (unsigned int i = 0; i < input_scan.ranges.size(); ++i)
+		  {
+			if (input_scan.ranges[i] < close)
+			{
+				close =input_scan.ranges[i];
+				index = i; 
+			}
 		}
-	}
-	ROS_INFO("The closest one is on %i value: %2.4f",index,close);
+		ROS_INFO("The closest one is on %i value: %2.4f",index,close);
   
 }
 
-void LaserFilter::scanCallback22(const sensor_msgs::LaserScan& input_scan)
+void LaserFilter::scanCallback(const sensor_msgs::LaserScan& input_scan)
 {
   
 

@@ -61,7 +61,11 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.header.stamp = start;
     scan_msg.header.frame_id = frame_id;
     scan_count++;
-
+		float filterMinAngle = DEG2RAD(160.0f);
+		float filterMaxAngle = DEG2RAD(200.0f);
+		filterMinAngle = filterMinAngle - M_PI;
+		filterMaxAngle = filterMaxAngle - M_PI;
+		
     bool reversed = (angle_max > angle_min);
     if ( reversed ) {
       scan_msg.angle_min =  M_PI - angle_max;
@@ -70,6 +74,7 @@ void publish_scan(ros::Publisher *pub,
       scan_msg.angle_min =  M_PI - angle_min;
       scan_msg.angle_max =  M_PI - angle_max;
     }
+		//ROS_INFO("filterMin = %f, filterMax = %f", filterMinAngle, filterMaxAngle );
     scan_msg.angle_increment =
         (scan_msg.angle_max - scan_msg.angle_min) / (double)(node_count-1);
 
@@ -81,25 +86,45 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.intensities.resize(node_count);
     scan_msg.ranges.resize(node_count);
     bool reverse_data = (!inverted && reversed) || (inverted && !reversed);
+		unsigned int filterCounter = 0;
+		float filterIndex = 0;
+		
     if (!reverse_data) {
         for (size_t i = 0; i < node_count; i++) {
+						filterIndex = scan_msg.angle_min+filterCounter*scan_msg.angle_increment;
+						//ROS_INFO("filterIndex = %f", filterIndex);
             float read_value = (float) nodes[i].dist_mm_q2/4.0f/1000;
-            if (read_value == 0.0)
+            if (read_value == 0.0 or (filterIndex > filterMinAngle and filterIndex < filterMaxAngle))
                 scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
             else
                 scan_msg.ranges[i] = read_value;
             scan_msg.intensities[i] = (float) (nodes[i].quality >> 2);
+						filterCounter++;
         }
     } else {
         for (size_t i = 0; i < node_count; i++) {
+						filterIndex = scan_msg.angle_min+filterCounter*scan_msg.angle_increment;
+						//ROS_INFO("Reverese: filterIndex = %f", filterIndex);
             float read_value = (float)nodes[i].dist_mm_q2/4.0f/1000;
-            if (read_value == 0.0)
+            if (read_value == 0.0 or (filterIndex > filterMinAngle and filterIndex < filterMaxAngle))
                 scan_msg.ranges[node_count-1-i] = std::numeric_limits<float>::infinity();
             else
                 scan_msg.ranges[node_count-1-i] = read_value;
             scan_msg.intensities[node_count-1-i] = (float) (nodes[i].quality >> 2);
+						filterCounter++;
         }
     }
+		/*float close = 1000;
+    int index = -1;
+		for (unsigned int i = 0; i < scan_msg.ranges.size(); ++i)
+		  {
+			if (scan_msg.ranges[i] < close)
+			{
+				close =scan_msg.ranges[i];
+				index = i; 
+			}
+		}
+		ROS_INFO("The closest one is on %i value: %2.4f",index,close);*/
 
     pub->publish(scan_msg);
 }
@@ -189,6 +214,8 @@ int main(int argc, char * argv[]) {
     bool angle_compensate = true;
     float max_distance = 8.0;
     int angle_compensate_multiple = 1;//it stand of angle compensate at per 1 degree
+//		float filterMinAngle = DEG2RAD(120.0f);
+//		float filterMaxAngle = DEG2RAD(240.0f);
     std::string scan_mode;
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
@@ -198,6 +225,8 @@ int main(int argc, char * argv[]) {
     nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
     nh_private.param<bool>("inverted", inverted, false);
     nh_private.param<bool>("angle_compensate", angle_compensate, false);
+//		nh_private.param<float>("filterMinAngle", filterMinAngle, 120.0f);
+//		nh_private.param<float>("filterMaxAngle", filterMaxAngle, 240.0f);
     nh_private.param<std::string>("scan_mode", scan_mode, std::string());
 
     ROS_INFO("RPLIDAR running on ROS package rplidar_ros. SDK Version:"RPLIDAR_SDK_VERSION"");
