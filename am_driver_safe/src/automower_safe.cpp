@@ -141,7 +141,7 @@ AutomowerSafe::AutomowerSafe(const ros::NodeHandle& nodeh, double anUpdateRate, 
     // Check if we shall publish the TF's?
     // It could be our "position" node that should do this...
    // Put to 0 since ukf node should be the one
-    n_private.param("publishTf", publishTf, 0);
+    n_private.param("publishTf", publishTf, 1);
     ROS_INFO("Param: publishTf: [%d]", publishTf);
 
     n_private.param("velocityRegulator", velocityRegulator, 1);

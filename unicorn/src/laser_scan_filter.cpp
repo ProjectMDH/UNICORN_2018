@@ -6,13 +6,14 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "laser_scan_publisher");
   ROS_INFO("Started laser filter");
   LaserFilter laser_filter;
-  ros::Rate r(100.0);
-  while(ros::ok())
-  {
-    laser_filter.publishScan();
-    ros::spinOnce();
-    r.sleep();
-  }
+  ros::Rate r(15.0);
+  //while(ros::ok())
+  //{
+    //laser_filter.publishScan();
+    
+   // r.sleep();
+  //}
+  ros::spin();
 }
 
 LaserFilter::LaserFilter()
@@ -27,8 +28,8 @@ LaserFilter::LaserFilter()
   {
     scan_topic = "/scan_filtered";
   }
-  scan_sub_ = n_.subscribe("/scan", 0, &LaserFilter::scanCallback, this);
-  scan_pub_ = n_.advertise<sensor_msgs::LaserScan>(scan_topic.c_str(), 0);
+  scan_sub_ = n_.subscribe("/scan", 1, &LaserFilter::scanCallback, this);
+  scan_pub_ = n_.advertise<sensor_msgs::LaserScan>(scan_topic.c_str(), 1);
   if (n_.getParam("/laser_filter/lower_angle", lower_angle_))
   {
     ROS_INFO("[laser_filter]: Lower angle threshold: %f", lower_angle_);
@@ -57,8 +58,8 @@ LaserFilter::LaserFilter()
     ROS_ERROR("[laser_filter] Transform to base_laser not available");
     heading = 0;
   }
-  lower_angle_ -= heading;
-  upper_angle_ -= heading;
+//  lower_angle_ -= heading;
+//  upper_angle_ -= heading;
   
 }
 
@@ -101,6 +102,22 @@ void LaserFilter::publishScan()
 
 void LaserFilter::scanCallback(const sensor_msgs::LaserScan& input_scan)
 {
+    float close = 1000;
+    int index = -1;
+	for (unsigned int i = 0; i < input_scan.ranges.size(); ++i)
+    {
+		if (input_scan.ranges[i] < close)
+		{
+			close =input_scan.ranges[i];
+			index = i; 
+		}
+	}
+	ROS_INFO("The closest one is on %i value: %2.4f",index,close);
+  
+}
+
+void LaserFilter::scanCallback22(const sensor_msgs::LaserScan& input_scan)
+{
   
 
   scan_.ranges.resize(input_scan.ranges.size());
@@ -110,33 +127,55 @@ void LaserFilter::scanCallback(const sensor_msgs::LaserScan& input_scan)
   double current_angle = input_scan.angle_min;
   ros::Time start_time = input_scan.header.stamp;
   unsigned int count = 0;
-
+  //ROS_INFO("Start = %f", start_angle);
   //loop through the scan and truncate the beginning and the end of the scan as necessary
   for (unsigned int i = 0; i < input_scan.ranges.size(); ++i)
   {
-    //wait until we get to our desired starting angle
-    if(start_angle < lower_angle_) 
-    {
-      start_angle += input_scan.angle_increment;
-      current_angle += input_scan.angle_increment;
-      start_time += ros::Duration(input_scan.time_increment);
-    }
-    else 
-    {
-      scan_.ranges[count] = input_scan.ranges[i];
+    //Since the lidar has a f* upped coordinate system some magic needs to happen.
+/*	 
+    if(upper_angle_ < lower_angle_){
+	/* This case presents itself when trying to read data in front of the robot. *
+	 * What happens here is that data points behind the robot are filtered away. *
+		if(current_angle <= upper_angle_ or current_angle >= lower_angle_){
+			scan_.ranges[count] = input_scan.ranges[i];
+			//make sure  that we don't update intensity data if its not available
+			if (input_scan.intensities.size() > i)
+				scan_.intensities[count] = input_scan.intensities[i];
+			count++;
+			current_angle += input_scan.angle_increment;
+		}
+		else{
+			current_angle += input_scan.angle_increment;
+		}
+    }*/
+//    else{
+		//wait until we get to our desired starting angle
+            if(start_angle < lower_angle_) 
+	    {
+	      start_angle += input_scan.angle_increment;
+	      current_angle += input_scan.angle_increment;
+	      start_time += ros::Duration(input_scan.time_increment);
+	    }
+	    else 
+	    {
+	      scan_.ranges[count] = input_scan.ranges[i];
 
-      //make sure  that we don't update intensity data if its not available
-      if (input_scan.intensities.size() > i)
-        scan_.intensities[count] = input_scan.intensities[i];
-        count++;
-        //check if we need to break out of the loop, basically if the next increment will put us over the threshold
-        if (current_angle + input_scan.angle_increment > upper_angle_) 
-        {
-          break;
-        }
-      current_angle += input_scan.angle_increment;
-    }
+	      //make sure  that we don't update intensity data if its not available
+	      if (input_scan.intensities.size() > i)
+			scan_.intensities[count] = input_scan.intensities[i];
+		  count++;
+		//check if we need to break out of the loop, basically if the next increment will put us over the threshold
+		if (current_angle + input_scan.angle_increment > upper_angle_) 
+		{
+		  break;
+		}
+
+//	          ROS_INFO("Current angle = %f, upper_angle = %f, lower_angle = %f", current_angle, upper_angle_, lower_angle_);
+	      current_angle += input_scan.angle_increment;
+//	}
   }
+	
+}
  
   
 
@@ -157,5 +196,5 @@ void LaserFilter::scanCallback(const sensor_msgs::LaserScan& input_scan)
   {
     scan_.intensities.resize(count);
   }
-
+  //laser_filter.publishScan();
 }

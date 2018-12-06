@@ -44,7 +44,7 @@ def get_serial_data():
         return None
 
 if __name__ == '__main__':
-    SERIAL_PORT = '/dev/ttyACM3'
+    SERIAL_PORT = '/dev/charlieArduinoTagUWB'
     ser = serial.Serial(SERIAL_PORT, 115200)
     ser.timeout = None
 

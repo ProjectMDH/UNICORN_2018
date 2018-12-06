@@ -6,7 +6,6 @@
 global_costmap:
   #Set the global and robot frames for the costmap
   plugins:
-    - {name: obstacle_layer,    type: "costmap_2d::ObstacleLayer"}
     - {name: static_layer,     type: "costmap_2d::StaticLayer"}
     - {name: inflation_layer,   type: "costmap_2d::InflationLayer"}
   
@@ -21,7 +20,7 @@ global_costmap:
   static_map: true
   rolling_window: false
   use_first_map_only: true
-  resolution: 0.04
+  resolution: 0.1
 
   inflation_layer:
     inflation_radius: 4
