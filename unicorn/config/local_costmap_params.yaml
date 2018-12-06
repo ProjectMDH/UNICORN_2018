@@ -6,14 +6,13 @@
 local_costmap:
   #The order of the plugins affects the costmap
   plugins:
-  - {name: static_layer,     type: "costmap_2d::StaticLayer"}
   - {name: sonar_layer,       type: "range_sensor_layer::RangeSensorLayer"}
   - {name: obstacle_layer,    type: "costmap_2d::ObstacleLayer"}
   - {name: inflation_layer,   type: "costmap_2d::InflationLayer"}
   
 
   #Set the global and robot frames for the costmap
-  global_frame: map
+  global_frame: odom
   robot_base_frame: base_link
 
   #Set the update and publish frequency of the costmap
@@ -26,7 +25,7 @@ local_costmap:
   rolling_window: true
   width: 4.0
   height: 4.0
-  resolution: 0.1
+  resolution: 0.04
   origin_x: 0.0
   origin_y: 0.0
   

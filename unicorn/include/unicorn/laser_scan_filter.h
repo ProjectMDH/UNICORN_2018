@@ -31,6 +31,7 @@ public:
 	*	and publishes a new message.
 	*/
 	void scanCallback(const sensor_msgs::LaserScan& input_scan);
+	void scanCallback22(const sensor_msgs::LaserScan& input_scan);
 	void publishScan();
 	/** @brief Computes static pose of base laser.
 	*	
