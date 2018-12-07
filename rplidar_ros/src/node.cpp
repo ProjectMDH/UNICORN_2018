@@ -96,6 +96,7 @@ void publish_scan(ros::Publisher *pub,
 						//ROS_INFO("filterIndex = %f", filterIndex);
             float read_value = (float) nodes[i].dist_mm_q2/4.0f/1000;
             if (read_value == 0.0 or (filterIndex > filterMinAngle and filterIndex < filterMaxAngle))
+//            if (read_value == 0.0 )
                 scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
             else
                 scan_msg.ranges[i] = read_value;
@@ -108,6 +109,7 @@ void publish_scan(ros::Publisher *pub,
 						//ROS_INFO("Reverese: filterIndex = %f", filterIndex);
             float read_value = (float)nodes[i].dist_mm_q2/4.0f/1000;
             if (read_value == 0.0 or (filterIndex > filterMinAngle and filterIndex < filterMaxAngle))
+//            if (read_value == 0.0 )
                 scan_msg.ranges[node_count-1-i] = std::numeric_limits<float>::infinity();
             else
                 scan_msg.ranges[node_count-1-i] = read_value;

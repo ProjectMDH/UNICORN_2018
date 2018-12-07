@@ -80,7 +80,8 @@
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
 <node pkg="nodelet" type="nodelet" name="voxel_grid_z" args="load pcl/VoxelGrid pcl_manager" output="screen">
 <remap from="~input" to="/zed/point_cloud/cloud_registered" />
-<remap from="~output" to="cloud_filterd_height" />
+<remap from="~output" to="cloud_filtered" />
+<!--remap from="~output" to="cloud_filterd_height" /-->
 <rosparam>
  filter_field_name: z
  filter_limit_min: -0.15
@@ -89,7 +90,7 @@
  leaf_size: 0.02
 </rosparam>
 </node>
-<node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/VoxelGrid pcl_manager" output="screen">
+<!--node pkg="nodelet" type="nodelet" name="voxel_grid_x" args="load pcl/VoxelGrid pcl_manager" output="screen">
 <remap from="~input" to="cloud_filterd_height" />
 <remap from="~output" to="cloud_filtered" />
 <rosparam>
@@ -99,7 +100,7 @@
  filter_limit_negative: false
  leaf_size: 0.02
 </rosparam>
-</node>
+</node-->
 </group>
 
 <!-- load joint controller configurations from YAML file to parameter server -->
@@ -179,7 +180,7 @@
 <!-- Launch Move Base -->
 <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 	<!-- <param name="base_global_planner" value="navfn/NavfnROS"/> -->
-	<param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+	<param name="base_global_planner" value="carrot_planner/CarrotPlanner"/>
 	<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
 	<rosparam file="$(find unicorn)/config/base_local_planner_teb.yaml" command="load" />
 	<rosparam file="$(find unicorn)/config/costmap_common_params_zed.yaml" command="load" ns="global_costmap" />
@@ -204,17 +205,17 @@
 
 <!-- Starts laser filter to enable limitation of laserscan angle -->
 <!-- No longer used since the filtering is done in rplidar node 
+-->
 <node name="laser_filter" pkg="unicorn" type="laser_scan_filter" output="screen">
 <rosparam>
  upper_angle: 2
  lower_angle: -2 
 </rosparam>
 </node>
--->
 <!-- Changes made by Marielle -->
-<rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 
 <node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_odom" clear_params="true">
+<rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 </node>
 
 <!--
