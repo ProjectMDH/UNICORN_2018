@@ -61,8 +61,8 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.header.stamp = start;
     scan_msg.header.frame_id = frame_id;
     scan_count++;
-		float filterMinAngle = DEG2RAD(160.0f);
-		float filterMaxAngle = DEG2RAD(200.0f);
+		float filterMinAngle = DEG2RAD(140.0f);
+		float filterMaxAngle = DEG2RAD(220.0f);
 		filterMinAngle = filterMinAngle - M_PI;
 		filterMaxAngle = filterMaxAngle - M_PI;
 		
@@ -214,8 +214,8 @@ int main(int argc, char * argv[]) {
     bool angle_compensate = true;
     float max_distance = 8.0;
     int angle_compensate_multiple = 1;//it stand of angle compensate at per 1 degree
-//		float filterMinAngle = DEG2RAD(120.0f);
-//		float filterMaxAngle = DEG2RAD(240.0f);
+		float filterMinAngle = DEG2RAD(140.0f);
+		float filterMaxAngle = DEG2RAD(220.0f);
     std::string scan_mode;
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
@@ -225,8 +225,8 @@ int main(int argc, char * argv[]) {
     nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
     nh_private.param<bool>("inverted", inverted, false);
     nh_private.param<bool>("angle_compensate", angle_compensate, false);
-//		nh_private.param<float>("filterMinAngle", filterMinAngle, 120.0f);
-//		nh_private.param<float>("filterMaxAngle", filterMaxAngle, 240.0f);
+		nh_private.param<float>("filterMinAngle", filterMinAngle, 140.0f);
+		nh_private.param<float>("filterMaxAngle", filterMaxAngle, 220.0f);
     nh_private.param<std::string>("scan_mode", scan_mode, std::string());
 
     ROS_INFO("RPLIDAR running on ROS package rplidar_ros. SDK Version:"RPLIDAR_SDK_VERSION"");
