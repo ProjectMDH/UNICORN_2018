@@ -52,6 +52,7 @@ void publish_scan(ros::Publisher *pub,
                   size_t node_count, ros::Time start,
                   double scan_time, bool inverted,
                   float angle_min, float angle_max,
+                  double filterMinAngle, double filterMaxAngle,
                   float max_distance,
                   std::string frame_id)
 {
@@ -61,10 +62,10 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.header.stamp = start;
     scan_msg.header.frame_id = frame_id;
     scan_count++;
-		float filterMinAngle = DEG2RAD(160.0f);
-		float filterMaxAngle = DEG2RAD(200.0f);
-		filterMinAngle = filterMinAngle - M_PI;
-		filterMaxAngle = filterMaxAngle - M_PI;
+//    float filterMinAngle = DEG2RAD(160.0f);
+//    float filterMaxAngle = DEG2RAD(200.0f);
+    filterMinAngle = filterMinAngle - M_PI;
+    filterMaxAngle = filterMaxAngle - M_PI;
 		
     bool reversed = (angle_max > angle_min);
     if ( reversed ) {
@@ -114,18 +115,6 @@ void publish_scan(ros::Publisher *pub,
 						filterCounter++;
         }
     }
-		/*float close = 1000;
-    int index = -1;
-		for (unsigned int i = 0; i < scan_msg.ranges.size(); ++i)
-		  {
-			if (scan_msg.ranges[i] < close)
-			{
-				close =scan_msg.ranges[i];
-				index = i; 
-			}
-		}
-		ROS_INFO("The closest one is on %i value: %2.4f",index,close);*/
-
     pub->publish(scan_msg);
 }
 
@@ -214,8 +203,8 @@ int main(int argc, char * argv[]) {
     bool angle_compensate = true;
     float max_distance = 8.0;
     int angle_compensate_multiple = 1;//it stand of angle compensate at per 1 degree
-//		float filterMinAngle = DEG2RAD(120.0f);
-//		float filterMaxAngle = DEG2RAD(240.0f);
+	double filterMinAngle = 2.1;
+	double filterMaxAngle = 4.2;
     std::string scan_mode;
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
@@ -225,12 +214,13 @@ int main(int argc, char * argv[]) {
     nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
     nh_private.param<bool>("inverted", inverted, false);
     nh_private.param<bool>("angle_compensate", angle_compensate, false);
-//		nh_private.param<float>("filterMinAngle", filterMinAngle, 120.0f);
-//		nh_private.param<float>("filterMaxAngle", filterMaxAngle, 240.0f);
+	nh_private.param<double>("filterMinAngle", filterMinAngle, 2.1);
+	nh_private.param<double>("filterMaxAngle", filterMaxAngle, 4.2);
     nh_private.param<std::string>("scan_mode", scan_mode, std::string());
 
+    
     ROS_INFO("RPLIDAR running on ROS package rplidar_ros. SDK Version:"RPLIDAR_SDK_VERSION"");
-
+    ROS_INFO("filterMin = %f, filterMax = %f", filterMinAngle, filterMaxAngle);
     u_result     op_result;
 
     // create the driver instance
@@ -344,10 +334,10 @@ int main(int argc, char * argv[]) {
                         }
                     }
   
-                    publish_scan(&scan_pub, angle_compensate_nodes, angle_compensate_nodes_count,
+                    publish_scan(&scan_pub, nodes, count,
                              start_scan_time, scan_duration, inverted,
-                             angle_min, angle_max, max_distance,
-                             frame_id);
+                             angle_min, angle_max, filterMinAngle, filterMaxAngle,
+                             max_distance, frame_id);
                 } else {
                     int start_node = 0, end_node = 0;
                     int i = 0;
@@ -361,10 +351,10 @@ int main(int argc, char * argv[]) {
                     angle_min = DEG2RAD(getAngle(nodes[start_node]));
                     angle_max = DEG2RAD(getAngle(nodes[end_node]));
 
-                    publish_scan(&scan_pub, &nodes[start_node], end_node-start_node +1,
+                    publish_scan(&scan_pub, nodes, count,
                              start_scan_time, scan_duration, inverted,
-                             angle_min, angle_max, max_distance,
-                             frame_id);
+                             angle_min, angle_max, filterMinAngle, filterMaxAngle,
+                             max_distance, frame_id);
                }
             } else if (op_result == RESULT_OPERATION_FAIL) {
                 // All the data is invalid, just publish them
@@ -373,8 +363,8 @@ int main(int argc, char * argv[]) {
 
                 publish_scan(&scan_pub, nodes, count,
                              start_scan_time, scan_duration, inverted,
-                             angle_min, angle_max, max_distance,
-                             frame_id);
+                             angle_min, angle_max, filterMinAngle, filterMaxAngle,
+                             max_distance, frame_id);
             }
         }
 
