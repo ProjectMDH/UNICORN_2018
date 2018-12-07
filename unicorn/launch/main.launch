@@ -223,6 +223,10 @@
         <param name="port" value="/dev/charlieArduinoBumper"/>
         <param name="baud" value="57600" />
 </node>
-
+<!--Liftsystem Added by Muji--> 
+<node name="Lift" pkg="rosserial_python" type="serial_node.py">
+        <param name="port" value="/dev/charlieArduinoLift"/>
+        <param name="baud" value="57600" />
+</node>
 
 </launch>

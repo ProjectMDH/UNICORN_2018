@@ -143,6 +143,7 @@ public:
 	void odomCallback(const nav_msgs::Odometry& msg);
 	void rangeCallback(const sensor_msgs::Range& msg);
 	void bumperCallback(const std_msgs::Bool& pushed_msg);
+  void LiftCallback (const std_msgs::Int8& recieveMsg); // ADDED BY MUJI
 	/** @brief Sends a goal on the map to move_base.
 	*
 	* @param x,y target point on map.
@@ -185,6 +186,8 @@ private:
 	ros::Subscriber odom_sub_;
 	ros::Subscriber bumper_sub_;
 	ros::Publisher lift_pub_;
+  ros::Publisher lift_publisher; //ADDED BY MUJI
+  ros::Subscriber lift_subscriber; // ADDED BY MUJI
 	geometry_msgs::Twist man_cmd_vel_;
 	MoveBaseClient move_base_clt_; 		/**< Client used to send commands to move_base*/
 	std::string frame_id_;
