@@ -154,13 +154,13 @@
 <!--Start the RPlidar A2 Driver -->
 
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
-	<param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
-	<param name="serial_baudrate"     type="int"    value="115200"/>
-	<param name="frame_id"            type="string" value="base_laser"/>
-	<param name="inverted"            type="bool"   value="false"/>
-	<param name="angle_compensate"    type="bool"   value="true"/>
-	<param name="filterMinAngle"      type="double"  value="2.0944"/>
-	<param name="filterMaxAngle"      type="double"  value="4.1888"/>
+		<param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
+		<param name="serial_baudrate"     type="int"    value="115200"/>
+		<param name="frame_id"            type="string" value="base_laser"/>
+		<param name="inverted"            type="bool"   value="false"/>
+		<param name="angle_compensate"    type="bool"   value="true"/>
+		<param name="filterMinAngle"      type="double" value="2.443"/>
+		<param name="filterMaxAngle"      type="double" value="3.840"/>
   </node>
 
 <!-- Start the RPlidar A3 Driver -->
@@ -203,13 +203,14 @@
 <!-- <node name="initialpose_publisher" pkg="unicorn" type="pub_initialpose"/> -->
 
 <!-- Starts laser filter to enable limitation of laserscan angle -->
+<!-- No longer used since the filtering is done in rplidar node 
 <node name="laser_filter" pkg="unicorn" type="laser_scan_filter" output="screen">
 <rosparam>
  upper_angle: 2
  lower_angle: -2 
 </rosparam>
 </node>
-
+-->
 <!-- Changes made by Marielle -->
 <rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 
@@ -225,10 +226,11 @@
         <param name="port" value="/dev/charlieArduinoBumper"/>
         <param name="baud" value="57600" />
 </node>
-<!--Liftsystem Added by Muji--> 
+<!--Liftsystem Added by Muji-->
+<!-- 
 <node name="Lift" pkg="rosserial_python" type="serial_node.py">
         <param name="port" value="/dev/charlieArduinoLift"/>
         <param name="baud" value="57600" />
 </node>
-
+-->
 </launch>

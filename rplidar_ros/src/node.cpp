@@ -62,8 +62,7 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.header.stamp = start;
     scan_msg.header.frame_id = frame_id;
     scan_count++;
-//    float filterMinAngle = DEG2RAD(160.0f);
-//    float filterMaxAngle = DEG2RAD(200.0f);
+
     filterMinAngle = filterMinAngle - M_PI;
     filterMaxAngle = filterMaxAngle - M_PI;
 
@@ -74,7 +73,7 @@ void publish_scan(ros::Publisher *pub,
       scan_msg.angle_max =  M_PI - angle_min;
     } else {
       scan_msg.angle_min =  M_PI - angle_min;
-      scan_msg.angle_max =  M_PI - angle_max;
+      scan_msg.angle_max =  M_PI - angle_max; 
     }
 		//ROS_INFO("filterMin = %f, filterMax = %f", filterMinAngle, filterMaxAngle );
     scan_msg.angle_increment =
