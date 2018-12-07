@@ -160,8 +160,8 @@
 		<param name="frame_id"            type="string" value="base_laser"/>
 		<param name="inverted"            type="bool"   value="false"/>
 		<param name="angle_compensate"    type="bool"   value="true"/>
-		<param name="filterMinAngle"      type="double" value="2.443"/>
-		<param name="filterMaxAngle"      type="double" value="3.840"/>
+		<param name="filterMinAngle"      type="double" value="2.269"/>
+		<param name="filterMaxAngle"      type="double" value="4.014"/>
   </node>
 
 <!-- Start the RPlidar A3 Driver -->
@@ -180,7 +180,7 @@
 <!-- Launch Move Base -->
 <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 	<!-- <param name="base_global_planner" value="navfn/NavfnROS"/> -->
-	<param name="base_global_planner" value="carrot_planner/CarrotPlanner"/>
+	<param name="base_global_planner" value="global_planner/GlobalPlanner"/>
 	<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
 	<rosparam file="$(find unicorn)/config/base_local_planner_teb.yaml" command="load" />
 	<rosparam file="$(find unicorn)/config/costmap_common_params_zed.yaml" command="load" ns="global_costmap" />
@@ -206,12 +206,12 @@
 <!-- Starts laser filter to enable limitation of laserscan angle -->
 <!-- No longer used since the filtering is done in rplidar node 
 -->
-<node name="laser_filter" pkg="unicorn" type="laser_scan_filter" output="screen">
+<!--node name="laser_filter" pkg="unicorn" type="laser_scan_filter" output="screen">
 <rosparam>
  upper_angle: 2
  lower_angle: -2 
 </rosparam>
-</node>
+</node-->
 <!-- Changes made by Marielle -->
 
 <node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_odom" clear_params="true">
