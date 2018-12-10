@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "unicorn_statemachine");
 	UnicornState statemachine;
 	statemachine.printUsage();
-	ros::Rate r(50);
+	ros::Rate r(10);
 	while(ros::ok())
 	{
       statemachine.active();
@@ -120,6 +120,8 @@ UnicornState::UnicornState()
   amcl_global_clt_ = n_.serviceClient<std_srvs::Empty>("/global_localization");
   cmd_vel_pub_ = n_.advertise<geometry_msgs::Twist>("/unicorn/cmd_vel", 0);
   lift_pub_ =n_.advertise<std_msgs::Int8>("/lift",0);
+  lift_publisher =n_.advertise<std_msgs::Int8>("/Lifting",0);//ADDED BY MUJI
+  lift_subscriber = n_.subscribe("Lifting", 0, &UnicornState::LiftCallback, this);
   odom_sub_ = n_.subscribe(odom_topic.c_str(), 0, &UnicornState::odomCallback, this);
   acc_cmd_srv_ = n_.advertiseService("cmd_charlie", &UnicornState::accGoalServer, this);
   bumper_sub_ = n_.subscribe("rearBumper",0, &UnicornState::bumperCallback, this);
@@ -344,7 +346,7 @@ void UnicornState::processKey(int c)
   }
   else if (c =='6')
   {
-  	state_ = current_state::ALIGNING;
+  	state_ = current_state::LIFT;// Changed from ALIGNING TO LIFT BY MUJI
   }
     else if (c =='7')
   {
@@ -355,8 +357,8 @@ void UnicornState::processKey(int c)
 void UnicornState::printUsage()
 {
 	std::cout << "------------------- State: " << stateToString(state_).c_str() << " -------------------" << std::endl 
-	<< "1: Specify new goal 2: Idle mode 3: Manual control 4: Init Load 5: Send command" << std::endl
-	<< "H: Pause execution  L: Init global localization" << std::endl;
+	<< "1: Specify new goal 2: Idle mode 3: Manual control 4: Init Load 5: Send command 6: Lift" << std::endl
+	<< "H: Pause execution  L: Init global localization" << std::endl;// ADDED OPTTION 6 BY MUJI
 }
 
 void UnicornState::odomCallback(const nav_msgs::Odometry& msg)
@@ -400,7 +402,17 @@ void UnicornState::bumperCallback(const std_msgs::Bool& pushed_msg)
 		}
 	}
 }
-
+void UnicornState::LiftCallback(const std_msgs::Int8& recieveMsg) // ADDED BY MUJI
+{
+		if(recieveMsg.data==2)
+		{
+     ROS_INFO("ACK has been recieved! The liftsystem is working!");
+		}
+		if(recieveMsg.data==3)
+		{
+     ROS_INFO("Lifting is done!");
+		}
+}
 void UnicornState::active()
 {
 	int c = getCharacter();
@@ -466,31 +478,36 @@ current_range /= range_sensor_list_.size();
 			break;
 
 		case current_state::LIFT:
-			ROS_INFO("[unicorn_statemachine] lift signal is %d", lifted_);
+			//ROS_INFO("[unicorn_statemachine] lift signal is %d", lifted_); // Uncommented BY MUJI
 			//	reversing_ = 0;
-  			if (lifted_ == 0 || lifted_ == 1)
-  				{}
-  			else
-  			{
-  				lifted_ == 0;
-  			}
-  			ROS_INFO("[unicorn_statemachine] lifter_: %d",lifted_);
+  			//if (lifted_ == 0 || lifted_ == 1)
+  			//	{}
+  			//else
+  		//	{
+  			//	lifted_ == 0;
+  			//}
+  		//	ROS_INFO("[unicorn_statemachine] lifter_: %d",lifted_);
 
 
-			if (lifted_ == 0)
-			{
-				lift_.data = 1;
-					lifted_ = 1;
-			}
-			else
-			{
-				lift_.data = 0;
-				lifted_ = 0;
-			}
-			ROS_INFO("[unicorn_statemachine] send lift signal %d",lift_.data);
-			lift_pub_.publish(lift_);
-
+			//if (lifted_ == 0)
+			//{
+			//	lift_.data = 1;
+				//	lifted_ = 1;
+		//	}
+			//else
+			//{
+				//lift_.data = 0;
+				//lifted_ = 0;
+			//}
+			//ROS_INFO("[unicorn_statemachine] send lift signal %d",lift_.data);
+			//lift_pub_.publish(lift_);
+ 			
+			ROS_INFO("Activation of the liftsystem is requested!");
+      ROS_INFO("Sending Messsage to the liftsystem!");
+      lift_.data=1;
+      lift_publisher.publish(lift_);
 			state_ = current_state::IDLE;
+      printUsage();
 			break;
 
 		case current_state::ALIGNING:

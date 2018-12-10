@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <launch>
     <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
         <param name="tf"                    value="tf"/>        <!--Transforms necessary to relate frames for laser, base, and odometry (see below)-->

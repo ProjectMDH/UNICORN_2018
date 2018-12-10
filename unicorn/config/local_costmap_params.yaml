@@ -16,8 +16,8 @@ local_costmap:
   robot_base_frame: base_link
 
   #Set the update and publish frequency of the costmap
-  update_frequency: 4.0
-  publish_frequency: 4.0
+  update_frequency: 5.0
+  publish_frequency: 1.0
 
   #We'll configure this costmap to be a rolling window... meaning it is always
   #centered at the robot
@@ -31,6 +31,6 @@ local_costmap:
   
   
   inflation_layer:
-    inflation_radius: 3
+    inflation_radius: 0.55 
     cost_scaling_factor: 10.0
 

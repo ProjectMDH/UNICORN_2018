@@ -62,10 +62,10 @@ void publish_scan(ros::Publisher *pub,
     scan_msg.header.stamp = start;
     scan_msg.header.frame_id = frame_id;
     scan_count++;
-//    float filterMinAngle = DEG2RAD(160.0f);
-//    float filterMaxAngle = DEG2RAD(200.0f);
+
     filterMinAngle = filterMinAngle - M_PI;
     filterMaxAngle = filterMaxAngle - M_PI;
+
 		
     bool reversed = (angle_max > angle_min);
     if ( reversed ) {
@@ -73,7 +73,7 @@ void publish_scan(ros::Publisher *pub,
       scan_msg.angle_max =  M_PI - angle_min;
     } else {
       scan_msg.angle_min =  M_PI - angle_min;
-      scan_msg.angle_max =  M_PI - angle_max;
+      scan_msg.angle_max =  M_PI - angle_max; 
     }
 		//ROS_INFO("filterMin = %f, filterMax = %f", filterMinAngle, filterMaxAngle );
     scan_msg.angle_increment =
@@ -96,6 +96,7 @@ void publish_scan(ros::Publisher *pub,
 						//ROS_INFO("filterIndex = %f", filterIndex);
             float read_value = (float) nodes[i].dist_mm_q2/4.0f/1000;
             if (read_value == 0.0 or (filterIndex > filterMinAngle and filterIndex < filterMaxAngle))
+//            if (read_value == 0.0 )
                 scan_msg.ranges[i] = std::numeric_limits<float>::infinity();
             else
                 scan_msg.ranges[i] = read_value;
@@ -108,6 +109,7 @@ void publish_scan(ros::Publisher *pub,
 						//ROS_INFO("Reverese: filterIndex = %f", filterIndex);
             float read_value = (float)nodes[i].dist_mm_q2/4.0f/1000;
             if (read_value == 0.0 or (filterIndex > filterMinAngle and filterIndex < filterMaxAngle))
+//            if (read_value == 0.0 )
                 scan_msg.ranges[node_count-1-i] = std::numeric_limits<float>::infinity();
             else
                 scan_msg.ranges[node_count-1-i] = read_value;
@@ -203,8 +205,8 @@ int main(int argc, char * argv[]) {
     bool angle_compensate = true;
     float max_distance = 8.0;
     int angle_compensate_multiple = 1;//it stand of angle compensate at per 1 degree
-	double filterMinAngle = 2.1;
-	double filterMaxAngle = 4.2;
+	  double filterMinAngle = 2.1;
+	  double filterMaxAngle = 4.2;
     std::string scan_mode;
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
@@ -214,8 +216,9 @@ int main(int argc, char * argv[]) {
     nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
     nh_private.param<bool>("inverted", inverted, false);
     nh_private.param<bool>("angle_compensate", angle_compensate, false);
-	nh_private.param<double>("filterMinAngle", filterMinAngle, 2.1);
-	nh_private.param<double>("filterMaxAngle", filterMaxAngle, 4.2);
+	  nh_private.param<double>("filterMinAngle", filterMinAngle, 2.1);
+	  nh_private.param<double>("filterMaxAngle", filterMaxAngle, 4.2);
+
     nh_private.param<std::string>("scan_mode", scan_mode, std::string());
 
     
