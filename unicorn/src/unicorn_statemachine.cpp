@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "unicorn_statemachine");
 	UnicornState statemachine;
 	statemachine.printUsage();
-	ros::Rate r(50);
+	ros::Rate r(10);
 	while(ros::ok())
 	{
       statemachine.active();
