@@ -133,8 +133,8 @@
 <node name="am_driver_safe" pkg="am_driver_safe" type="am_driver_safe_node" output="screen">
 	<param name="serialPort" value="/dev/charlieHRP" type="str" />
 	<param name="printCharge" value="false"/>
-<!-- Do not publish TF, ukf node should -->
-	<param name="publishTf" value="1"/>
+<!-- Marielle: Do not publish TF, ukf node should -->
+	<param name="publishTf" value="0"/>
 	<param name="pitchAndRoll" value="false"/>
 	<param name="publishGPS" value="false"/>
 	<param name="serialLog" value="false"/>
@@ -189,8 +189,8 @@
 	<rosparam file="$(find unicorn)/config/global_costmap_params.yaml" command="load" />
 	<remap from="cmd_vel" to="/unicorn/cmd_vel"/>
 
-	<!-- Added by Marielle 
-	<remap from="amcl_pose" to="odometry/filtered"/>-->
+	<!-- Added by Marielle -->
+	<remap from="amcl_pose" to="odometry/filtered"/>
 </node>
 <!-- source that publishes the joint positions as a sensor_msgs/JointState -->
 <param name="use_gui" value="false"/>
@@ -218,9 +218,8 @@
 <rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 </node>
 
-<!--
 <node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true">
-</node>-->
+</node>
 
 <!-- Starts the Arduino to enable ros and read/ write from it -->
 <node name="serial_node" pkg="rosserial_python" type="serial_node.py">
