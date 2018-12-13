@@ -132,11 +132,11 @@ void cmd_velCallback(const geometry_msgs::Twist::ConstPtr& msg)
 void initTexture(void)
 {
     int width, height, nrChannels;
-    char pic_0[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/straight.png";
-    char pic_1[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/sharpLeft.png";
-    char pic_2[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/sharpRight.png";
-    char pic_3[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/softLeft.png";
-    char pic_4[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/softRight.png";
+    char pic_0[] = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/straight.png";
+    char pic_1[] = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/sharpLeft.png";
+    char pic_2[] = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/sharpRight.png";
+    char pic_3[] = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/softLeft.png";
+    char pic_4[] = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/softRight.png";
     
     char* pic_names[nrTextures];
     pic_names[0] = pic_0;
@@ -187,7 +187,7 @@ void initTexture(void)
 void saveGlobalVar(void)
 {
 	fstream myfile;
-	myfile.open ("/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src/parameters.txt", ios::out|ios::trunc);
+	myfile.open ("/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src/parameters.txt", ios::out|ios::trunc);
 	if (myfile.is_open())
 	{
 		myfile << angleX << "\n";
@@ -213,7 +213,7 @@ void saveGlobalVar(void)
 void loadGlobalVar(void)
 {	
 	string line;
-  	fstream myfile ("/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src/parameters.txt", ios::in);
+  	fstream myfile ("/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src/parameters.txt", ios::in);
   	if (myfile.is_open())
   	{	
   		getline(myfile,line);

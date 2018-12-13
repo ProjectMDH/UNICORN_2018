@@ -73,8 +73,8 @@
 
 <!-- Run UWB added by Marielle -->
 
-<include file="$(find ros_dwm1000)/launch/localize.launch">
-</include>
+<!--include file="$(find ros_dwm1000)/launch/localize.launch">
+</include-->
 
 <!-- Run a VoxelGrid filter to clean NaNs and downsample the pointcloud output goes to cloud_filtered -->
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
@@ -134,7 +134,7 @@
 	<param name="serialPort" value="/dev/charlieHRP" type="str" />
 	<param name="printCharge" value="false"/>
 <!-- Marielle: Do not publish TF, ukf node should -->
-	<param name="publishTf" value="0"/>
+	<param name="publishTf" value="1"/>
 	<param name="pitchAndRoll" value="false"/>
 	<param name="publishGPS" value="false"/>
 	<param name="serialLog" value="false"/>
@@ -190,7 +190,7 @@
 	<remap from="cmd_vel" to="/unicorn/cmd_vel"/>
 
 	<!-- Added by Marielle -->
-	<remap from="amcl_pose" to="odometry/filtered"/>
+	<!--remap from="amcl_pose" to="odometry/filtered"/-->
 </node>
 <!-- source that publishes the joint positions as a sensor_msgs/JointState -->
 <param name="use_gui" value="false"/>
@@ -218,8 +218,8 @@
 <rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 </node>
 
-<node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true">
-</node>
+<!--node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true">
+</node-->
 
 <!-- Starts the Arduino to enable ros and read/ write from it -->
 <node name="serial_node" pkg="rosserial_python" type="serial_node.py">
