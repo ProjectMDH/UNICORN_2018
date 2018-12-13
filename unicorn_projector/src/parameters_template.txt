@@ -4,6 +4,8 @@ GLfloat anglez
 GLdouble transX
 GLdouble transY
 GLdouble transZ
+GLdouble fW
+GLdouble fH
 GLdouble neardist
 GLdouble fardist
 unsigned char transformChosen
