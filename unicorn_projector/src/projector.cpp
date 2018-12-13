@@ -12,6 +12,9 @@
 #include <fstream>
 using namespace std;
 
+string img_path = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/";
+string global_var_path = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src/";
+
 //The direction of the robot movement
 enum Direction {straight, sharpLeft, sharpRight, softLeft, softRight};
 Direction direction = straight;	//The current direction of the robot
@@ -62,7 +65,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1280, 800); //represent the projector's native resolution
-    glutCreateWindow("projector"); //The title on the window
+    glutCreateWindow(""); //The title on the window
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE,GLUT_ACTION_CONTINUE_EXECUTION);
 
 	//set the clearing color used in between frames
@@ -132,18 +135,13 @@ void cmd_velCallback(const geometry_msgs::Twist::ConstPtr& msg)
 void initTexture(void)
 {
     int width, height, nrChannels;
-    char pic_0[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/straight.png";
-    char pic_1[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/sharpLeft.png";
-    char pic_2[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/sharpRight.png";
-    char pic_3[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/softLeft.png";
-    char pic_4[] = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/softRight.png";
     
-    char* pic_names[nrTextures];
-    pic_names[0] = pic_0;
-    pic_names[1] = pic_1;
-    pic_names[2] = pic_2;
-	pic_names[3] = pic_3;
-	pic_names[4] = pic_4;
+    string pic_names[nrTextures];
+    pic_names[0] = img_path + "straight.png";
+    pic_names[1] = img_path + "sharpLeft.png";
+    pic_names[2] = img_path + "sharpRight.png";
+	pic_names[3] = img_path + "softLeft.png";
+	pic_names[4] = img_path + "softRight.png";
     
     unsigned char* pix_data[nrTextures];
     
@@ -160,7 +158,7 @@ void initTexture(void)
 	  
 		//Without this, images are loaded up-side down
 		stbi_set_flip_vertically_on_load(true);  
-		pix_data[i] = stbi_load(pic_names[i], &width, &height, &nrChannels, 0);
+		pix_data[i] = stbi_load(pic_names[i].c_str(), &width, &height, &nrChannels, 0);
 
 		//if image has been loaded successfully
 		if (pix_data[i])
@@ -187,7 +185,7 @@ void initTexture(void)
 void saveGlobalVar(void)
 {
 	fstream myfile;
-	myfile.open ("/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src/parameters.txt", ios::out|ios::trunc);
+	myfile.open ((global_var_path + "parameters.txt").c_str(), ios::out|ios::trunc);
 	if (myfile.is_open())
 	{
 		myfile << angleX << "\n";
@@ -196,6 +194,8 @@ void saveGlobalVar(void)
 		myfile << transX << "\n";
 		myfile << transY << "\n";
 		myfile << transZ << "\n";
+		myfile << fW << "\n";
+		myfile << fH << "\n";
 		myfile << neardist << "\n";
 		myfile << fardist << "\n";
 		myfile << transformChosen << "\n";
@@ -213,7 +213,7 @@ void saveGlobalVar(void)
 void loadGlobalVar(void)
 {	
 	string line;
-  	fstream myfile ("/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src/parameters.txt", ios::in);
+  	fstream myfile ((global_var_path + "parameters.txt").c_str(), ios::in);
   	if (myfile.is_open())
   	{	
   		getline(myfile,line);
@@ -225,6 +225,7 @@ void loadGlobalVar(void)
 		getline(myfile,line);
 		angleZ = strtof(line.c_str(), 0);
 		  		cout << angleZ << '\n';
+		  		
 		getline(myfile,line);
 		transX = strtod(line.c_str(), 0);
 		  		cout << transX << '\n';
@@ -234,12 +235,20 @@ void loadGlobalVar(void)
 		getline(myfile,line);
 		transZ = strtod(line.c_str(), 0);
 		  		cout << transZ << '\n';
+		
+		getline(myfile,line);
+		fW = strtod(line.c_str(), 0);
+		  		cout << fW << '\n';
+		getline(myfile,line);
+		fH = strtod(line.c_str(), 0);
+		  		cout << fH << '\n';		
 		getline(myfile,line);
 		neardist = strtod(line.c_str(), 0);
 				cout << neardist << '\n';
 		getline(myfile,line);
 		fardist = strtod(line.c_str(), 0);
 				cout << fardist << '\n';
+				
 		getline(myfile,line);
 		transformChosen = line.at(0);
 				cout << transformChosen << '\n';
@@ -261,10 +270,10 @@ void initWorld(void)
 {	
 	loadGlobalVar();	//Initializes the global variables
 		
-   	const GLdouble pi = 3.1415926535897932384626433832795;   
-    int w=1280, h=800; 	//set width and hight of the camera view
-    GLdouble fovY = 60; //set focal view of the camera in the Y direction
-   	GLdouble aspect = double(w)/h; //the aspect ratio of the camera
+   	//const GLdouble pi = 3.1415926535897932384626433832795;   
+    //int w=1280, h=800; 	//set width and hight of the camera view
+    //GLdouble fovY = 60; //set focal view of the camera in the Y direction
+   	//GLdouble aspect = double(w)/h; //the aspect ratio of the camera
    	
    	glMatrixMode(GL_PROJECTION);	//Changes made shall affect the projection (camera view)
     glLoadIdentity();
@@ -272,8 +281,8 @@ void initWorld(void)
    	//gluPerspective(fovY, aspect, neardist, fardist); //an alternative to the glFrustum()
    		
     //convert the perspective parameters to fit the glFrustum()
-    fH = tan(fovY/360*pi)*neardist;	//fH = tan((fovY / 2)/180*pi)*neardist;
-    fW = fH * aspect;				//fW, fH are focal width and height
+    //fH = tan(fovY/360*pi)*neardist;	//fH = tan((fovY / 2)/180*pi)*neardist;
+    //fW = fH * aspect;				//fW, fH are focal width and height
     
     //set the view of the camera
    	glFrustum(-fW, fW, -fH, fH, neardist, fardist);
