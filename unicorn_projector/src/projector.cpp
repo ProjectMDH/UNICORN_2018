@@ -12,8 +12,8 @@
 #include <fstream>
 using namespace std;
 
-string img_path = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src//Textures/";
-string global_var_path = "/home/lex/catkin_ws/src/UNICORN_2018/unicorn_projector/src/";
+string img_path = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src/Textures/";
+string global_var_path = "/home/nvidia/catkin_ws/src/UNICORN_2018/unicorn_projector/src/";
 
 //The direction of the robot movement
 enum Direction {straight, sharpLeft, sharpRight, softLeft, softRight};
@@ -145,7 +145,7 @@ void initTexture(void)
     
     unsigned char* pix_data[nrTextures];
     
-    glGenTextures(3, texture);
+    glGenTextures(5, texture);
 
 	for (int i = 0; i < nrTextures; i++)
 	{
