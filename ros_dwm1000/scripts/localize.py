@@ -91,25 +91,25 @@ def get_serial_data():
         return None
 
 # Added by Marielle ---------------------------------------------------------------
-def uwb_pos_pub(x, y):
+def uwb_pos_pub(x, y, FRAME_ID):
     
     #Publish pos as geometry_msgs/PoseWithCovarianceStamped for EKF/UKF
     uwb_tag_pos = PoseWithCovarianceStamped()
     
     #header information
-    uwb_tag_pos.header.frame_id = "map"
+    uwb_tag_pos.header.frame_id = FRAME_ID
     uwb_tag_pos.header.stamp = rospy.Time.now()
  
     # pos x and y, no z
     uwb_tag_pos.pose.pose.position.x = x
     uwb_tag_pos.pose.pose.position.y = y
-    uwb_tag_pos.pose.pose.position.z = 0.0
+    uwb_tag_pos.pose.pose.position.z = 0.7
 
     #no orientation
     uwb_tag_pos.pose.pose.orientation.x = 0.0
     uwb_tag_pos.pose.pose.orientation.y = 0.0
     uwb_tag_pos.pose.pose.orientation.z = 0.0
-    uwb_tag_pos.pose.pose.orientation.w = 0.0
+    uwb_tag_pos.pose.pose.orientation.w = 1.0
     
     #high value means ignore the variable(s) the sensor does not produce
     #in our case ignore z, roll, pitch and yaw
@@ -119,7 +119,7 @@ def uwb_pos_pub(x, y):
     #uwb_tag_pos.pose.covariance[18:23] = [0.0, 0.0, 0.0, 99999, 0.0, 0.0]
     #uwb_tag_pos.pose.covariance[24:29] = [0.0, 0.0, 0.0, 0.0, 99999, 0.0]
     #uwb_tag_pos.pose.covariance[30:35] = [0.0, 0.0, 0.0, 0.0, 0.0, 99999]
-    uwb_tag_pos.pose.covariance = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999]   
+    uwb_tag_pos.pose.covariance = [1.8629, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9700, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99999]   
     
     #publishes to our topic named uwbpos
     rospy.loginfo(uwb_tag_pos)
@@ -188,13 +188,13 @@ if __name__ == '__main__':
             br.sendTransform((pos['x'], pos['y'], pos['z']),
                             tf.transformations.quaternion_from_euler(0, 0, 0),
                             rospy.Time.now(),
-                            FRAME_ID,
+                            uwb_tag_in_world,
                             "map")
 
             #TODO: Publish pos as geometry_msgs/PoseWithCovarianceStamped for EKF and only broadcast TF as an option.
 
 # Added by Marielle ---------------------------------------------------------------
-            uwb_pos_pub(pos['x'], pos['y'])
+            uwb_pos_pub(pos['x'], pos['y'], FRAME_ID)
 # End -----------------------------------------------------------------------------
 
             # clear lists once trilateration is done for the next cycle

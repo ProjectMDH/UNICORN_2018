@@ -70,11 +70,23 @@
     </include>
 </group>
 
+<!--Start the UWB -->
+<!-- by Marielle -->
 
-<!-- Run UWB added by Marielle -->
-
-<include file="$(find ros_dwm1000)/launch/localize.launch">
+<include file="$(find ros_dwm1000)/launch/tf.launch" />
+	<arg name="anchor1" value="4.72 -2.66 1 0 0 0" />
+	<arg name="anchor2" value="3.8 2.24 1 0 0 0" />
+	<arg name="anchor3" value="-1.7 -3.78 1 0 0 0" />
 </include>
+
+<node pkg="ros_dwm1000" name="ros_dwm1000"  type="localize.py" output="screen">
+	<param name="serial_port" value="/dev/charlieArduinoTagUWB" />
+        <param name="req_anchor" value="3" />
+        <param name="min_range" value="0.5" />
+        <param name="max_range" value="12.0" />
+        <param name="frame_id" value="uwb_tag" />
+</node>
+
 
 <!-- Run a VoxelGrid filter to clean NaNs and downsample the pointcloud output goes to cloud_filtered -->
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
@@ -133,8 +145,8 @@
 <node name="am_driver_safe" pkg="am_driver_safe" type="am_driver_safe_node" output="screen">
 	<param name="serialPort" value="/dev/charlieHRP" type="str" />
 	<param name="printCharge" value="false"/>
-<!-- Marielle: Do not publish TF, ukf node should -->
-	<param name="publishTf" value="0"/>
+<!-- Marielle: Do not publish TF if ukf_map_node is on, or publish but do not let ukf_made node publish -->
+	<param name="publishTf" value="1"/>
 	<param name="pitchAndRoll" value="false"/>
 	<param name="publishGPS" value="false"/>
 	<param name="serialLog" value="false"/>
@@ -190,7 +202,7 @@
 	<remap from="cmd_vel" to="/unicorn/cmd_vel"/>
 
 	<!-- Added by Marielle -->
-	<remap from="amcl_pose" to="odometry/filtered"/>
+	<!--remap from="amcl_pose" to="odometry/filtered"/> -->
 </node>
 <!-- source that publishes the joint positions as a sensor_msgs/JointState -->
 <param name="use_gui" value="false"/>
@@ -212,13 +224,17 @@
  lower_angle: -2 
 </rosparam>
 </node-->
+
 <!-- Changes made by Marielle -->
 
 <node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_odom" clear_params="true">
 <rosparam command="load" file="$(find unicorn)/config/ukf_template.yaml" />
 </node>
 
-<node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true">
+<!-- New node added by Marielle -->
+<!-- <node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true"> -->
+
+
 </node>
 
 <!-- Starts the Arduino to enable ros and read/ write from it -->

@@ -142,11 +142,11 @@ ukf_node_map:
 
     pose0: amcl_pose
     pose0_config: [true,  true,  false,
-               false, false, false,
+               false, false, true,
                false, false, false,
                false, false, false,
                false, false, false]
-    pose0_differential: true
+    pose0_differential: false
     pose0_relative: false
     pose0_queue_size: 5
     pose0_rejection_threshold: 2  # Note the difference in parameter name
@@ -159,7 +159,7 @@ ukf_node_map:
                    false, false, false,
                    false, false, false,
                    false, false, false]
-    pose1_differential: true
+    pose1_differential: false
     pose1_relative: false
     pose1_queue_size: 5
     pose1_rejection_threshold: 2  # Note the difference in parameter name
