@@ -91,13 +91,13 @@ def get_serial_data():
         return None
 
 # Added by Marielle ---------------------------------------------------------------
-def uwb_pos_pub(x, y, FRAME_ID):
+def uwb_pos_pub(x, y):
     
     #Publish pos as geometry_msgs/PoseWithCovarianceStamped for EKF/UKF
     uwb_tag_pos = PoseWithCovarianceStamped()
     
     #header information
-    uwb_tag_pos.header.frame_id = FRAME_ID
+    uwb_tag_pos.header.frame_id = "map" 
     uwb_tag_pos.header.stamp = rospy.Time.now()
  
     # pos x and y, no z
@@ -138,6 +138,7 @@ if __name__ == '__main__':
     REQ_ANCHOR = rospy.get_param('/ros_dwm1000/req_anchor', 3)
     FRAME_ID = rospy.get_param('/ros_dwm1000/frame_id', 'uwb_tag')
 
+    #FRAME_NR= rospy.get_param('/ros_dwm1000/frame_nr', 'uwb_tag_world')
     SERIAL_PORT = rospy.get_param('/ros_dwm1000/serial_port', '/dev/charlieArduinoTagUWB')
 
 
@@ -147,7 +148,6 @@ if __name__ == '__main__':
     rospy.loginfo("%s is %s", rospy.resolve_name('/ros_dwm1000/req_anchor'), REQ_ANCHOR)
     rospy.loginfo("%s is %s", rospy.resolve_name('/ros_dwm1000/frame_id'), FRAME_ID)
     rospy.loginfo("%s is %s", rospy.resolve_name('/ros_dwm1000/serial_port'), SERIAL_PORT)
-
     ser = serial.Serial(SERIAL_PORT, 115200)
     ser.timeout = None
     rospy.loginfo("Connected to %s", ser.portstr)
@@ -188,13 +188,13 @@ if __name__ == '__main__':
             br.sendTransform((pos['x'], pos['y'], pos['z']),
                             tf.transformations.quaternion_from_euler(0, 0, 0),
                             rospy.Time.now(),
-                            uwb_tag_in_world,
+                            FRAME_ID,
                             "map")
 
             #TODO: Publish pos as geometry_msgs/PoseWithCovarianceStamped for EKF and only broadcast TF as an option.
 
 # Added by Marielle ---------------------------------------------------------------
-            uwb_pos_pub(pos['x'], pos['y'], FRAME_ID)
+            uwb_pos_pub(pos['x'], pos['y'])
 # End -----------------------------------------------------------------------------
 
             # clear lists once trilateration is done for the next cycle

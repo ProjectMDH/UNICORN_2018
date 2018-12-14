@@ -141,12 +141,12 @@
 
 <!-- UWB Joint Marielle -->
 
-   <uwbtag frame="uwb_tag" robot_namespace="$(arg robot_namespace)"/>
+   <uwbtag frame="uwb_t" robot_namespace="$(arg robot_namespace)"/>
    
    <joint name="uwb_chassis_joint" type="fixed">
-      <origin xyz="$(arg uwb_xyz)" rpy= "0.0 0.0 0.0" />
+      <origin xyz="$(arg uwb_xyz)" rpy= "0.0 0.0 0.0"/>
       <parent link="chassis_link" />
-      <child link="uwb_tag" />
+      <child link="uwb_t" />
    </joint>
 
   <link name="zed_left_camera">

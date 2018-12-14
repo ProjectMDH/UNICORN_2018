@@ -73,10 +73,10 @@
 <!--Start the UWB -->
 <!-- by Marielle -->
 
-<include file="$(find ros_dwm1000)/launch/tf.launch" />
-	<arg name="anchor1" value="4.72 -2.66 1 0 0 0" />
-	<arg name="anchor2" value="3.8 2.24 1 0 0 0" />
-	<arg name="anchor3" value="-1.7 -3.78 1 0 0 0" />
+<include file="$(find ros_dwm1000)/launch/tf.launch" >
+	<arg name="anchor1" value="2.3 0.7 1 0 0 0" />
+	<arg name="anchor2" value="-2.7 -2.2 1 0 0 0" />
+	<arg name="anchor3" value="-0.15 4.0 1 0 0 0" />
 </include>
 
 <node pkg="ros_dwm1000" name="ros_dwm1000"  type="localize.py" output="screen">
@@ -85,6 +85,7 @@
         <param name="min_range" value="0.5" />
         <param name="max_range" value="12.0" />
         <param name="frame_id" value="uwb_tag" />
+	<!--param name="frame_nr" value="uwb_tag_world" /-->
 </node>
 
 
@@ -202,7 +203,7 @@
 	<remap from="cmd_vel" to="/unicorn/cmd_vel"/>
 
 	<!-- Added by Marielle -->
-	<!--remap from="amcl_pose" to="odometry/filtered"/> -->
+	<!--remap from="amcl_pose" to="odometry/filtered"/--> 
 </node>
 <!-- source that publishes the joint positions as a sensor_msgs/JointState -->
 <param name="use_gui" value="false"/>
@@ -232,10 +233,8 @@
 </node>
 
 <!-- New node added by Marielle -->
-<!-- <node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true"> -->
-
-
-</node>
+<!--node pkg="robot_localization" type="ukf_localization_node" name="ukf_node_map" clear_params="true"> 
+</node-->
 
 <!-- Starts the Arduino to enable ros and read/ write from it -->
 <node name="serial_node" pkg="rosserial_python" type="serial_node.py">
@@ -243,10 +242,10 @@
         <param name="baud" value="57600" />
 </node>
 <!--Liftsystem Added by Muji-->
-<!-- 
+ 
 <node name="Lift" pkg="rosserial_python" type="serial_node.py">
         <param name="port" value="/dev/charlieArduinoLift"/>
         <param name="baud" value="57600" />
 </node>
--->
+
 </launch>
