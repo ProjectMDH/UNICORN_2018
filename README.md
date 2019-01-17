@@ -36,7 +36,6 @@ touch CATKIN_IGNORE
 Then continue getting other packages.
 ```
 cd ~/catkin_ws/src
-git clone https://github.com/clearpathrobotics/LMS1xx.git
 git clone https://github.com/husky/husky.git
 cd ~/catkin_ws/src/husky
 git checkout kinetic-devel
@@ -74,7 +73,7 @@ To access the git manual.
 
 ```
 cd ~/catkin_ws/src
-git clone https://github.com/notlochness/UNICORN.git
+https://github.com/ProjectMDH/UNICORN_2018.git
 ```
 
 #### Checkout the branch you want and make a local one
